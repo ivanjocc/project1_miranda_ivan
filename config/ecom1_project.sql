@@ -106,3 +106,6 @@ VALUES
   ('Product 1', 50, 19.99, '/public/img/product1.png', 'Description Product 1'),
   ('Product 2', 30, 29.99, '/public/img/product2.jpg', 'Description Product 2'),
   ('Product 3', 20, 39.99, '/public/img/product3.jpg', 'Description Product 3');
+
+ALTER TABLE `product`
+ADD COLUMN `img_path` varchar(255) NOT NULL;

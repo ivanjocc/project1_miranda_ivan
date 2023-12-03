@@ -1,89 +1,85 @@
 <?php
 session_start();
 
-// Define the function for calculating the cart total
-function calculateCartTotal($cartItems) {
-    $total = 0;
+require_once('../../config/database.php');
 
-    foreach ($cartItems as $item) {
-        $total += $item['quantity'] * $item['price'];
+// Verificar si el usuario está autenticado
+if (!isset($_SESSION['user_id'])) {
+    // Redirigir a la página de inicio de sesión si el usuario no está autenticado
+    header("Location: ../auth/login.php");
+    exit();
+}
+
+// Obtener información del usuario desde la sesión
+$user_id = $_SESSION['user_id'];
+
+// Obtener información del carrito para el usuario actual
+$cart_query = "SELECT p.*, c.quantity AS cart_quantity FROM product p
+              INNER JOIN cart c ON p.id = c.product_id
+              WHERE c.user_id = $user_id";
+
+$cart_result = mysqli_query($conn, $cart_query);
+
+// Verificar si se ha enviado un formulario para actualizar la cantidad en el carrito
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $product_id = $_POST['product_id'];
+    $new_quantity = $_POST['new_quantity'];
+
+    // Verificar la disponibilidad del producto
+    $availability_query = "SELECT quantity FROM product WHERE id = $product_id";
+    $availability_result = mysqli_query($conn, $availability_query);
+    $availability = mysqli_fetch_assoc($availability_result)['quantity'];
+
+    if ($new_quantity <= $availability) {
+        // Actualizar la cantidad en el carrito
+        $update_query = "UPDATE cart SET quantity = $new_quantity WHERE user_id = $user_id AND product_id = $product_id";
+        mysqli_query($conn, $update_query);
+    } else {
+        echo "La cantidad solicitada excede la disponibilidad del producto.";
     }
-
-    return $total;
 }
 
-// Check if the cart is set in the session
-if (isset($_SESSION["cart"])) {
-    $cartItems = $_SESSION["cart"];
+// Calcular el monto total del carrito
+$total_query = "SELECT SUM(p.price * c.quantity) AS total FROM product p
+                INNER JOIN cart c ON p.id = c.product_id
+                WHERE c.user_id = $user_id";
 
-    // Perform any necessary calculations for $cartTotal
-    $cartTotal = calculateCartTotal($cartItems);
-} else {
-    // If the cart is empty, set $cartItems as an empty array
-    $cartItems = [];
-    $cartTotal = 0;
-}
+$total_result = mysqli_query($conn, $total_query);
+$total = mysqli_fetch_assoc($total_result)['total'];
+
+// Cerrar la conexión a la base de datos
+mysqli_close($conn);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Cart</title>
-    <link rel="stylesheet" href="../../public/css/styles.css">
 </head>
-
 <body>
-    <header>
-        <h1>Shopping Cart</h1>
-    </header>
+    <h1>Shopping Cart</h1>
 
-    <nav>
-        <!-- Navigation menu for the shopping cart interface, if needed -->
-    </nav>
+    <?php
+    // Mostrar productos en el carrito
+    while ($product = mysqli_fetch_assoc($cart_result)) {
+        echo "<div>";
+        echo "<h3>{$product['name']}</h3>";
+        echo "<p>Price: {$product['price']}</p>";
+        echo "<p>Available Quantity: {$product['quantity']}</p>";
+        echo "<form method='post' action='view_cart.php'>";
+        echo "<label for='new_quantity'>Quantity:</label>";
+        echo "<input type='number' name='new_quantity' value='{$product['cart_quantity']}' min='1' max='{$product['quantity']}'>";
+        echo "<input type='hidden' name='product_id' value='{$product['id']}'>";
+        echo "<button type='submit'>Update Quantity</button>";
+        echo "</form>";
+        echo "</div>";
+    }
 
-    <main>
-        <?php if (empty($cartItems)) : ?>
-            <p>Your cart is empty.</p>
-        <?php else : ?>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Product Name</th>
-                        <th>Quantity</th>
-                        <th>Price</th>
-                        <th>Total</th>
-                        <!-- <th>Action</th> -->
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Loop through cart items and display information -->
-                    <?php foreach ($cartItems as $item) : ?>
-                        <tr>
-                            <td><?php echo $item['name']; ?></td>
-                            <td><?php echo $item['quantity']; ?></td>
-                            <td><?php echo $item['price']; ?></td>
-                            <td><?php echo $item['quantity'] * $item['price']; ?></td>
-                            <!-- <td>
-                                <a href="update_cart_item.php?productId=<?php echo $item['id']; ?>">Update</a>
-                                |
-                                <a href="remove_from_cart.php?productId=<?php echo $item['id']; ?>" onclick="return confirm('Are you sure you want to remove this item from the cart?')">Remove</a>
-                            </td> -->
-                        </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+    // Mostrar el monto total
+    echo "<p>Total: $total</p>";
+    ?>
 
-            <p>Total: <?php echo $cartTotal; ?></p>
-            <a href="../order/confirm_order.php">Proceed to Checkout</a>
-        <?php endif; ?>
-    </main>
-
-    <footer>
-        <!-- Footer content, if needed -->
-    </footer>
 </body>
-
 </html>

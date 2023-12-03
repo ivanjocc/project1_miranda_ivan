@@ -31,7 +31,7 @@ $user = mysqli_fetch_assoc($result);
         <img src="../../public/images/avatar.jpg" alt="Default Profile Picture" width="100">
         <br>
         <label for="user_name">Username:</label>
-        <input type="text" name="user_name" value="<?php echo $user['user_name']; ?>" required>
+        <input type="text" name="user_name" value="<?php echo $user['user_name']; ?>" required disabled>
         <br>
         <label for="email">Email:</label>
         <input type="email" name="email" value="<?php echo $user['email']; ?>" required>
