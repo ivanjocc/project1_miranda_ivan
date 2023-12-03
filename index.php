@@ -1,86 +1,38 @@
-<?php
-// Include the database configuration
-include_once 'config/database.php';
-
-// Include any necessary model files
-include_once 'models/User.php';
-include_once 'models/Product.php';
-include_once 'models/Order.php';
-include_once 'models/Role.php';
-include_once 'models/Address.php';
-include_once 'models/OrderHasProduct.php';
-
-// Example: Get all products from the database
-function getAllProducts()
-{
-    $conn = connexionDB(); // Assuming you have a function named connexionDB for database connection
-    $query = "SELECT * FROM product";
-    $result = mysqli_query($conn, $query);
-
-    $products = [];
-    while ($row = mysqli_fetch_assoc($result)) {
-        $product = new Product($row['id'], $row['name'], $row['quantity'], $row['price'], $row['img_url'], $row['description']);
-        $products[] = $product;
-    }
-
-    mysqli_close($conn);
-
-    return $products;
-}
-
-// Example: Display products on the homepage
-$products = getAllProducts();
-?>
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homepage</title>
-    <link rel="stylesheet" href="public/css/styles.css">
+    <title>Cat Shop</title>
 </head>
-
 <body>
-    <header>
-        <h1>Welcome to Our E-commerce Website</h1>
-    </header>
 
-    <nav>
-        <a href="views/auth/login.php">Login</a>
-        <a href="views/auth/register.php">Register</a>
-        <a href="views/cart/view_cart.php">View Cart</a>
-        <a href="views/auth/profile.php">Profile</a>
-    </nav>
+<?php include 'includes/header.php'; ?>
 
-    <main>
-        <h2>Featured Products</h2>
+<main>
+    <h1>Welcome to the Cat Shop</h1>
 
-        <div class="product-list">
-            <?php foreach ($products as $product) : ?>
-                <div class="product">
-                    <img src="<?php echo $product->getImgUrl(); ?>" alt="<?php echo $product->getName(); ?>">
-                    <h3><?php echo $product->getName(); ?></h3>
-                    <p><?php echo $product->getDescription(); ?></p>
-                    <p>Price: $<?php echo $product->getPrice(); ?></p>
-                    <!-- Agregar esto dentro del bucle de productos en index.php -->
-                    <form method="post" action="views/cart/addToCart.php">
-                        <input type="hidden" name="productId" value="<?php echo $product->getId(); ?>">
-                        <button type="submit">Add to Cart</button>
-                    </form>
+    <div class="cat-container">
+        <?php
+        // Obtener la lista de gatos desde el directorio de imágenes
+        $catImages = glob('public/img/*.jpg');
+        
+        foreach ($catImages as $catImage) {
+            // Obtener el nombre del archivo (sin la ruta)
+            $catName = pathinfo($catImage, PATHINFO_FILENAME);
 
-                    <!-- <button>Add to Cart</button> -->
-                </div>
-            <?php endforeach; ?>
-        </div>
-    </main>
+            // Mostrar cada gato con un botón para agregarlo al carrito
+            echo '<div class="cat-item">';
+            echo '<img src="' . $catImage . '" alt="' . $catName . '">';
+            echo '<p>' . $catName . '</p>';
+            echo '<button>Add to Cart</button>';
+            echo '</div>';
+        }
+        ?>
+    </div>
+</main>
 
-    <footer>
-        <!-- Footer content, if needed -->
-    </footer>
+<?php include 'includes/footer.php'; ?>
 
-    <script src="public/js/script.js"></script>
 </body>
-
 </html>

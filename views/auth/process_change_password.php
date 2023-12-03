@@ -1,60 +1,46 @@
+<!-- process_change_password.php -->
 <?php
+require_once('../../config/database.php');
 
-// Inicia la sesión
+// Suponiendo que la información del usuario se almacena en una sesión después del inicio de sesión
 session_start();
-
-// Verifica si el usuario está autenticado
 if (!isset($_SESSION['user_id'])) {
-    // Si no está autenticado, redirecciona a la página de inicio de sesión
+    // Redirigir a la página de inicio de sesión si el usuario no está autenticado
     header("Location: login.php");
     exit();
 }
 
-// Incluye el archivo de conexión a la base de datos y la clase PasswordChange
-require_once('../../config/database.php');
-require_once('../../models/PasswordChange.php');
+$user_id = $_SESSION['user_id'];
 
-// Obtiene el ID del usuario desde la sesión
-$userID = $_SESSION['user_id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $current_password = $_POST['current_password'];
+    $new_password = $_POST['new_password'];
+    $confirm_new_password = $_POST['confirm_new_password'];
 
-// Obtiene la contraseña actual ingresada por el usuario
-$currentPassword = $_POST['currentPassword'];
+    // Obtener la contraseña actual del usuario desde la base de datos
+    $sql = "SELECT `pwd` FROM `user` WHERE `id` = $user_id";
+    $result = mysqli_query($conn, $sql);
+    $user = mysqli_fetch_assoc($result);
 
-// Obtiene la nueva contraseña ingresada por el usuario
-$newPassword = $_POST['newPassword'];
+    if (password_verify($current_password, $user['pwd'])) {
+        // Verificar que la contraseña actual ingresada coincide con la almacenada en la base de datos
 
-// Obtiene la confirmación de la nueva contraseña ingresada por el usuario
-$confirmNewPassword = $_POST['confirmNewPassword'];
+        if ($new_password === $confirm_new_password) {
+            // Las nuevas contraseñas coinciden
 
-// Verifica si la nueva contraseña y la confirmación coinciden
-if ($newPassword !== $confirmNewPassword) {
-    // Si no coinciden, redirecciona a la página de cambio de contraseña con un mensaje de error
-    header("Location: change_password.php?error=nomatch");
-    exit();
-}
+            // Actualizar la contraseña en la base de datos
+            $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+            $update_sql = "UPDATE `user` SET `pwd` = '$hashed_password' WHERE `id` = $user_id";
+            mysqli_query($conn, $update_sql);
 
-// Crea una instancia de la clase PasswordChange
-$passwordChangeModel = new PasswordChange($userID, $currentPassword, $newPassword);
-
-// Verifica si la contraseña actual es válida
-if ($passwordChangeModel->verifyPassword()) {
-    // Si la contraseña actual es válida, actualiza la contraseña del usuario
-    $result = $passwordChangeModel->updatePassword();
-
-    // Verifica si la actualización fue exitosa
-    if ($result['success']) {
-        // Redirecciona a la página de perfil con un mensaje de éxito
-        header("Location: profile.php?success=passwordchanged");
-        exit();
+            // Redirigir a la página de perfil después de cambiar la contraseña
+            header("Location: profile.php");
+            exit();
+        } else {
+            echo "New passwords do not match.";
+        }
     } else {
-        // Si hay un error en la actualización, redirecciona a la página de cambio de contraseña con un mensaje de error
-        header("Location: change_password.php?error=" . urlencode($result['error']));
-        exit();
+        echo "Current password is incorrect.";
     }
-} else {
-    // Si la contraseña actual no es válida, redirecciona a la página de cambio de contraseña con un mensaje de error
-    header("Location: change_password.php?error=invalidpassword");
-    exit();
 }
-
 ?>

@@ -1,43 +1,51 @@
+<!-- profile.php -->
 <?php
 require_once('../../config/database.php');
-require_once('../../models/User.php');
 
+// Suponiendo que la información del usuario se almacena en una sesión después del inicio de sesión
 session_start();
+if (!isset($_SESSION['user_id'])) {
+    // Redirigir a la página de inicio de sesión si el usuario no está autenticado
+    header("Location: login.php");
+    exit();
+}
 
+$user_id = $_SESSION['user_id'];
+
+// Obtener la información del usuario desde la base de datos
+$sql = "SELECT * FROM `user` WHERE `id` = $user_id";
+$result = mysqli_query($conn, $sql);
+$user = mysqli_fetch_assoc($result);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Profile</title>
-    <link rel="stylesheet" href="../../public/css/styles.css">
 </head>
 <body>
-    <header>
-        <h1>User Profile</h1>
-    </header>
-
-    <nav>
-        <!-- Navigation menu for the user profile, if needed -->
-    </nav>
-
-    <main>
-        <?php if (isset($_SESSION['user_name'])) : ?>
-            <h2>Welcome, <?php echo $_SESSION['user_name']; ?>!</h2>
-
-            <!-- Resto del contenido del perfil aquí -->
-
-        <?php else : ?>
-            <p>Error: User not authenticated.</p>
-        <?php endif; ?>
-    </main>
-    <a href="../../index.php">Home</a>
-    <a href="./logout.php">LogOut</a>
-
-    <footer>
-        <!-- Footer content, if needed -->
-    </footer>
+    <h2>User Profile</h2>
+    <form action="process_update_profile.php" method="post" enctype="multipart/form-data">
+        <!-- Mostrar la información del usuario y agregar campos de formulario según la estructura de tu base de datos -->
+        <img src="../../public/images/avatar.jpg" alt="Default Profile Picture" width="100">
+        <br>
+        <label for="user_name">Username:</label>
+        <input type="text" name="user_name" value="<?php echo $user['user_name']; ?>" required>
+        <br>
+        <label for="email">Email:</label>
+        <input type="email" name="email" value="<?php echo $user['email']; ?>" required>
+        <br>
+        <label for="fname">First Name:</label>
+        <input type="text" name="fname" value="<?php echo $user['fname']; ?>" required>
+        <br>
+        <label for="lname">Last Name:</label>
+        <input type="text" name="lname" value="<?php echo $user['lname']; ?>" required>
+        <br>
+        <input type="submit" value="Save">
+    </form>
+    <a href="./change_password.php">Change password</a>
+    <br>
+    <a href="./logout.php">Log out</a>
 </body>
 </html>

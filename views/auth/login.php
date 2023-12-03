@@ -2,35 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="../../public/css/styles.css">
 </head>
 <body>
-    <header>
-        <h1>Login</h1>
-    </header>
-
-    <nav>
-        <!-- Navigation menu for the authentication interface, if needed -->
-    </nav>
-
-    <main>
-        <form action="process_login.php" method="post">
-            <label for="userName">Username:</label>
-            <input type="text" id="userName" name="userName" required>
-
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-
-            <button type="submit">Login</button>
-        </form>
-
-        <p>Don't have an account? <a href="register.php">Register here</a>.</p>
-    </main>
-
-    <footer>
-        <!-- Footer content, if needed -->
-    </footer>
+    <h2>Login</h2>
+    <form action="process_login.php" method="post">
+        <!-- Add login form fields -->
+        <label for="user_name">Username:</label>
+        <input type="text" name="user_name" required>
+        <br>
+        <label for="pwd">Password:</label>
+        <input type="password" name="pwd" required>
+        <br>
+        <input type="submit" value="Login">
+    </form>
 </body>
 </html>

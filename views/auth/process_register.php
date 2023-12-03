@@ -1,45 +1,28 @@
 <?php
-
-// Inicia la sesión
-session_start();
-
-// Incluye el archivo de conexión a la base de datos y la clase User
 require_once('../../config/database.php');
-require_once('../../models/User.php');
 
-// Obtiene los datos del formulario
-$userName = $_POST['userName'];
-$email = $_POST['email'];
-$password = $_POST['password'];
-$firstName = $_POST['firstName'];
-$lastName = $_POST['lastName'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Receive form data
+    $user_name = $_POST['user_name'];
+    $email = $_POST['email'];
+    $pwd = $_POST['pwd'];
 
-// Crea una instancia del modelo User
-$userModel = new User($userName, $email, $password, $firstName, $lastName);
+    // Hash the password
+    $hashed_password = password_hash($pwd, PASSWORD_DEFAULT);
 
-// Verifica si el nombre de usuario ya está en uso
-if ($userModel->isUserNameTaken($userName)) {
-    // Si el nombre de usuario está en uso, redirecciona a la página de registro con un mensaje de error
-    header("Location: register.php?error=usernametaken");
-    exit();
+    // Insert the new user into the database
+    $sql = "INSERT INTO `user` (`user_name`, `email`, `pwd`, `role_id`) 
+            VALUES ('$user_name', '$email', '$hashed_password', (SELECT `id` FROM `role` WHERE `name` = 'client'))";
+
+    if (mysqli_query($conn, $sql)) {
+        echo "User registered successfully";
+    } else {
+        echo "Error registering user: " . mysqli_error($conn);
+    }
+} else {
+    echo "Access not allowed";
 }
 
-// Verifica si el correo electrónico ya está en uso
-if ($userModel->isEmailTaken($email)) {
-    // Si el correo electrónico está en uso, redirecciona a la página de registro con un mensaje de error
-    header("Location: register.php?error=emailtaken");
-    exit();
-}
-
-// Crea un nuevo usuario
-$userID = $userModel->createUser($userName, $email, $password, $firstName, $lastName);
-
-// Inicia sesión con el nuevo usuario
-$_SESSION['user_id'] = $userID;
-$_SESSION['user_name'] = $userName;
-
-// Redirecciona a la página de perfil con un mensaje de éxito
-header("Location: profile.php?success=registered");
-exit();
-
+// Close the database connection
+mysqli_close($conn);
 ?>

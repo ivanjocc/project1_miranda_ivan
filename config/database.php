@@ -16,7 +16,6 @@ function connexionDB()
     return $conn;
 }
 
-// Uso de la función de conexión
 $conn = connexionDB();
 
 ?>

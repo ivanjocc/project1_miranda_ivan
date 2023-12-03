@@ -1,48 +1,42 @@
 <?php
-
 require_once('../../config/database.php');
-require_once('../../models/User.php');
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["userName"]) && isset($_POST["password"])) {
-    // Obtener datos del formulario
-    $userName = $_POST["userName"];
-    $password = $_POST["password"];
+session_start();
 
-    // Validar y limpiar los datos para prevenir inyecciones SQL
-    $userName = htmlspecialchars($userName);
-    $password = htmlspecialchars($password);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $user_name = $_POST['user_name'];
+    $password = $_POST['pwd'];
 
-    // Asegúrate de escapar los datos si los estás utilizando directamente en una consulta SQL
-    $userName = mysqli_real_escape_string($conn, $userName);
-    $password = mysqli_real_escape_string($conn, $password);
+    // Fetch user data from the database based on the provided username
+    $sql = "SELECT * FROM `user` WHERE `user_name` = '$user_name'";
+    $result = mysqli_query($conn, $sql);
 
-    $conn = connexionDB(); // Asume que connexionDB es una función que establece la conexión a la base de datos
+    if ($result) {
+        $user = mysqli_fetch_assoc($result);
 
-    // Ejemplo de consulta para obtener información del usuario
-    $getUserQuery = "SELECT * FROM user WHERE user_name = ? AND pwd = ?";
-    $getUserStmt = mysqli_prepare($conn, $getUserQuery);
-    mysqli_stmt_bind_param($getUserStmt, "ss", $userName, $password);
+        // Check if the password matches and the user is an admin
+        if ($user && password_verify($password, $user['pwd']) && $user['role_id'] == 1) {
+            // Password is correct, start the session and store user ID and role
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_role'] = $user['role_id'];
 
-    // Ejecutar la consulta
-    mysqli_stmt_execute($getUserStmt);
-    mysqli_stmt_store_result($getUserStmt);
-
-    // Verificar si se encontró un usuario con las credenciales proporcionadas
-    if (mysqli_stmt_num_rows($getUserStmt) == 1) {
-        // Autenticación exitosa, redirigir a alguna página de éxito o al panel del usuario
-        header("Location: profile.php");
-        exit();
+            // Redirect based on the user's role
+            if ($user['role_id'] == 1) { // Use '==' for loose comparison
+                header("Location: ../admin/dashboard.php");
+            } else {
+                header("Location: profile.php");
+            }
+            exit();
+        } else {
+            echo "Invalid username or password for admin";
+        }
     } else {
-        // Autenticación fallida, redirigir a la página de inicio de sesión con un mensaje de error
-        header("Location: login.php?error=1");
-        exit();
+        echo "Error: " . mysqli_error($conn);
     }
-
-    // Cerrar la declaración y la conexión
-    mysqli_stmt_close($getUserStmt);
-    mysqli_close($conn);
 } else {
-    // La solicitud no es POST o faltan parámetros, redirigir a alguna página de error o mostrar un mensaje
-    echo "Error en la solicitud.";
+    echo "Access not allowed";
 }
+
+// Close the database connection
+mysqli_close($conn);
 ?>

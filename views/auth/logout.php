@@ -1,12 +1,11 @@
 <?php
-
-// Inicia la sesión
+// Suponiendo que la información del usuario se almacena en una sesión después del inicio de sesión
 session_start();
 
-// Destruye todas las variables de sesión
+// Destruir todas las variables de sesión
 session_destroy();
 
-// Redirecciona a la página de inicio de sesión
+// Redirigir a la página de inicio de sesión
 header("Location: login.php");
 exit();
 ?>

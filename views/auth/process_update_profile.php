@@ -1,48 +1,39 @@
 <?php
+require_once('../../config/database.php'); // Adjust the path based on your file structure
 
-require_once('../../config/database.php');
-require_once('../../models/User.php');
-
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["firstName"]) && isset($_POST["lastName"])) {
-    // Obtener datos del formulario
-    $userId = $user->getId(); // Asume que $user contiene la información del usuario autenticado
-    $firstName = $_POST["firstName"];
-    $lastName = $_POST["lastName"];
-
-    // Validar y limpiar los datos para prevenir inyecciones SQL
-    $firstName = htmlspecialchars($firstName);
-    $lastName = htmlspecialchars($lastName);
-
-    // Asegúrate de escapar los datos si los estás utilizando directamente en una consulta SQL
-    $firstName = mysqli_real_escape_string($conn, $firstName);
-    $lastName = mysqli_real_escape_string($conn, $lastName);
-
-    $conn = connexionDB(); // Asume que connexionDB es una función que establece la conexión a la base de datos
-
-    // Ejemplo de consulta para actualizar el perfil del usuario
-    $updateProfileQuery = "UPDATE user SET fname = ?, lname = ? WHERE id = ?";
-    $updateProfileStmt = mysqli_prepare($conn, $updateProfileQuery);
-    mysqli_stmt_bind_param($updateProfileStmt, "ssi", $firstName, $lastName, $userId);
-
-    // Ejecutar la consulta
-    mysqli_stmt_execute($updateProfileStmt);
-
-    // Verificar si la actualización fue exitosa
-    if (mysqli_affected_rows($conn) > 0) {
-        // Redirigir a la página de perfil con un mensaje de éxito
-        header("Location: profile.php?success=1");
-        exit();
-    } else {
-        // Redirigir a la página de perfil con un mensaje de error
-        header("Location: profile.php?error=1");
-        exit();
-    }
-
-    // Cerrar la declaración y la conexión
-    mysqli_stmt_close($updateProfileStmt);
-    mysqli_close($conn);
-} else {
-    // La solicitud no es POST o faltan parámetros, redirigir a alguna página de error o mostrar un mensaje
-    echo "Error en la solicitud.";
+// Suponiendo que la información del usuario se almacena en una sesión después del inicio de sesión
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    // Redirigir a la página de inicio de sesión si el usuario no está autenticado
+    header("Location: login.php");
+    exit();
 }
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Obtener el ID del usuario desde la sesión
+    $user_id = $_SESSION['user_id'];
+
+    // Obtener datos del formulario
+    $user_name = $_POST['user_name'];
+    $email = $_POST['email'];
+    $fname = $_POST['fname'];
+    $lname = $_POST['lname'];
+
+    // Actualizar la información del usuario en la base de datos
+    $sql = "UPDATE `user` 
+            SET `user_name` = '$user_name', `email` = '$email', `fname` = '$fname', `lname` = '$lname' 
+            WHERE `id` = $user_id";
+
+    if (mysqli_query($conn, $sql)) {
+        // echo "Profile updated successfully";
+        header("Location: profile.php");
+    } else {
+        echo "Error updating profile: " . mysqli_error($conn);
+    }
+} else {
+    echo "Access not allowed";
+}
+
+// Cerrar la conexión a la base de datos
+mysqli_close($conn);
 ?>
