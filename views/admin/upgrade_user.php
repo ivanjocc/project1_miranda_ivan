@@ -1,44 +1,44 @@
 <?php
+session_start();
 
-require_once('../../config/database.php');
+// Verificar si el usuario está autenticado
+if (!isset($_SESSION['user_id'])) {
+    // Redirigir a la página de inicio de sesión si el usuario no está autenticado
+    header("Location: ../auth/login.php");
+    exit();
+}
 
-require_once('../../models/User.php');
+// Obtener el rol del usuario desde la sesión
+$user_role = $_SESSION['user_role'];
 
-if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET["userId"])) {
-    // Obtener el ID del usuario de la URL
-    $userId = $_GET["userId"];
+// Verificar si el usuario tiene el rol de administrador
+if ($user_role != 1) {
+    // Redirigir a la página de inicio si el usuario no es un administrador
+    header("Location: ../../index.php");
+    exit();
+}
 
-    // Validar y limpiar el ID del usuario para prevenir inyecciones SQL
-    if (!is_numeric($userId)) {
-        // Manejar el error, por ejemplo, redirigir a una página de error o mostrar un mensaje
-        echo "Error en el ID del usuario.";
-        exit();
-    }
+// Verificar si se proporcionó el ID del usuario a actualizar
+if (isset($_GET['user_id'])) {
+    $user_id = $_GET['user_id'];
 
-    $conn = connexionDB(); // Asume que connexionDB es una función que establece la conexión a la base de datos
+    // Conectar a la base de datos (ajusta la ruta según tu estructura de archivos)
+    require_once('../../config/database.php');
 
-    // Ejemplo de actualización del rol del usuario
-    $updateUserRoleQuery = "UPDATE user SET role_id = (SELECT id FROM role WHERE name = 'admin') WHERE id = ?";
-    $updateUserRoleStmt = mysqli_prepare($conn, $updateUserRoleQuery);
-    mysqli_stmt_bind_param($updateUserRoleStmt, "i", $userId);
+    // Consulta para actualizar el rol del usuario a 'admin'
+    $update_query = "UPDATE `user` SET `role_id` = 1 WHERE `id` = $user_id";
+    $result = mysqli_query($conn, $update_query);
 
-    // Ejecutar la consulta
-    $result = mysqli_stmt_execute($updateUserRoleStmt);
-
-    // Cerrar la declaración y la conexión
-    mysqli_stmt_close($updateUserRoleStmt);
-    mysqli_close($conn);
-
-    // Verificar el resultado y redirigir según sea necesario
+    // Verificar si se realizó la actualización correctamente
     if ($result) {
-        header("Location: manage_users.php");
-        exit();
+        header("Location: dashboard.php");
     } else {
-        // Hubo un error en la actualización, redirigir a alguna página de error o mostrar un mensaje
-        echo "Error al actualizar el rol del usuario.";
+        echo "Error al actualizar el rol del usuario: " . mysqli_error($conn);
     }
+
+    // Cierra la conexión a la base de datos
+    mysqli_close($conn);
 } else {
-    // La solicitud no es GET o falta el parámetro userId, redirigir a alguna página de error o mostrar un mensaje
-    echo "Error en la solicitud.";
+    echo "ID de usuario no proporcionado.";
 }
 ?>

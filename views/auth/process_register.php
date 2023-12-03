@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             VALUES ('$user_name', '$email', '$hashed_password', (SELECT `id` FROM `role` WHERE `name` = 'client'))";
 
     if (mysqli_query($conn, $sql)) {
-        echo "User registered successfully";
+        header("Location: profile.php");
     } else {
         echo "Error registering user: " . mysqli_error($conn);
     }

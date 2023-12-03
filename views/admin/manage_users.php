@@ -1,56 +1,71 @@
+<?php
+session_start();
+
+// Verificar si el usuario está autenticado
+if (!isset($_SESSION['user_id'])) {
+    // Redirigir a la página de inicio de sesión si el usuario no está autenticado
+    header("Location: ../authlogin.php");
+    exit();
+}
+
+// Obtener el rol del usuario desde la sesión
+$user_role = $_SESSION['user_role'];
+
+// Verificar si el usuario tiene el rol de administrador
+if ($user_role != 1) {
+    // Redirigir a la página de inicio si el usuario no es un administrador
+    header("Location: ../../index.php");
+    exit();
+}
+
+// Simplemente muestra la lista de usuarios por ahora
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Users</title>
-    <link rel="stylesheet" href="../../public/css/styles.css">
 </head>
 <body>
-    <header>
-        <h1>Manage Users</h1>
-    </header>
+    <h2>User List</h2>
 
-    <nav>
-        <!-- Navigation menu for the admin interface, if needed -->
-    </nav>
+    <?php
+    // Conecta a la base de datos (ajusta la ruta según tu estructura de archivos)
+    require_once('../../config/database.php');
 
-    <main>
-        <table>
-            <thead>
+    // Consulta para obtener la lista de usuarios
+    $sql = "SELECT `id`, `user_name`, `email` FROM `user`";
+    $result = mysqli_query($conn, $sql);
+
+    if ($result) {
+        // Muestra la lista de usuarios
+        echo "<table border='1'>
                 <tr>
                     <th>User ID</th>
                     <th>Username</th>
                     <th>Email</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Role</th>
                     <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Loop through users and display information -->
-                <?php foreach ($users as $user): ?>
-                    <tr>
-                        <td><?php echo $user->getId(); ?></td>
-                        <td><?php echo $user->getUserName(); ?></td>
-                        <td><?php echo $user->getEmail(); ?></td>
-                        <td><?php echo $user->getFirstName(); ?></td>
-                        <td><?php echo $user->getLastName(); ?></td>
-                        <td><?php echo $user->getRole(); ?></td>
-                        <td>
-                            <a href="upgrade_user.php?userId=<?php echo $user->getId(); ?>">Upgrade to Admin</a>
-                            |
-                            <a href="delete_user.php?userId=<?php echo $user->getId(); ?>" onclick="return confirm('Are you sure you want to delete this user?')">Delete</a>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </main>
+                </tr>";
 
-    <footer>
-        <!-- Footer content, if needed -->
-    </footer>
+        while ($row = mysqli_fetch_assoc($result)) {
+            echo "<tr>
+                    <td>{$row['id']}</td>
+                    <td>{$row['user_name']}</td>
+                    <td>{$row['email']}</td>
+                    <td><a href='upgrade_user.php?user_id={$row['id']}'>Admin</a> | <a href='delete_user.php?user_id={$row['id']}'>Delete</a></td>
+                </tr>";
+        }
+
+        echo "</table>";
+
+        // Liberar el resultado
+        mysqli_free_result($result);
+    } else {
+        echo "Error: " . mysqli_error($conn);
+    }
+
+    // Cierra la conexión a la base de datos
+    mysqli_close($conn);
+    ?>
 </body>
 </html>
