@@ -14,21 +14,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($result) {
         $user = mysqli_fetch_assoc($result);
 
-        // Check if the password matches and the user is an admin
-        if ($user && password_verify($password, $user['pwd']) && $user['role_id'] == 1) {
+        // Check if the password matches
+        if ($user && password_verify($password, $user['pwd'])) {
             // Password is correct, start the session and store user ID and role
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_role'] = $user['role_id'];
 
             // Redirect based on the user's role
-            if ($user['role_id'] == 1) { // Use '==' for loose comparison
+            if ($user['role_id'] == 1) { // Admin
                 header("Location: ../admin/dashboard.php");
             } else {
                 header("Location: profile.php");
             }
             exit();
         } else {
-            echo "Invalid username or password for admin";
+            echo "Invalid username or password";
         }
     } else {
         echo "Error: " . mysqli_error($conn);
