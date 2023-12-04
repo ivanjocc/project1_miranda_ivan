@@ -85,18 +85,10 @@ foreach ($cart_products as $product) {
 
     <!-- Formulario para enviar la orden -->
     <form action="process_confirm_order.php" method="post">
-        <!-- Puedes incluir campos adicionales según sea necesario -->
-
         <!-- Agregamos un campo oculto para enviar el precio total al procesar la orden -->
         <input type="hidden" name="total_price" value="<?php echo $total_price; ?>">
 
         <button type="submit">Place Order</button>
-    </form>
-
-    <!-- Formulario para pagar con PayPal -->
-    <form action="process_paypal_payment.php" method="post">
-        <input type="hidden" name="total_price" value="<?php echo $total_price; ?>">
-        <button type="submit" name="paypal_payment">Pay with PayPal</button>
     </form>
 
 </body>
