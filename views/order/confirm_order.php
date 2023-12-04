@@ -1,59 +1,27 @@
 <?php
-// Inicia la sesión
 session_start();
 
-// Verifica si el usuario está autenticado
-if (!isset($_SESSION['user_id'])) {
-    // Si no está autenticado, redirecciona a la página de inicio de sesión
-    header("Location: ../../views/auth/login.php");
+if (!isset($_SESSION['user'])) {
+    header('Location: ../auth/login.php');
     exit();
 }
 
-// Incluye el archivo de conexión a la base de datos y la clase OrderController
-require_once('../../config/database.php');
-require_once('../../controllers/OrderController.php');
-require_once('../../models/Address.php');  // Asegúrate de tener la ruta correcta
+// Incluye la conexión a la base de datos y las funciones de utilidad
+require_once '../../config/database.php';
 
-// Obtiene la información necesaria para confirmar la orden
-$userId = $_SESSION['user_id'];
-$orderItems = [];  // Reemplaza esto con la lógica para obtener los elementos de la orden
-$orderTotal = 0;   // Initialize $orderTotal
-// Dirección de envío por defecto
-$shippingAddress = new Address(
-    null,
-    'Calle Principal',
-    '123',
-    'Ciudad Principal',
-    'Provincia Principal',
-    '12345',
-    'País Principal'
-);
+// Obtiene la información del usuario
+$user = $_SESSION['user'];
 
-// Dirección de pago por defecto
-$paymentAddress = new Address(
-    null,
-    'Calle de Pago',
-    '456',
-    'Ciudad de Pago',
-    'Provincia de Pago',
-    '54321',
-    'País de Pago'
-);
+// Obtiene la información de la orden
+$orderRef = $_SESSION['order_ref'];
+$order = getOrderDetailsByRef($orderRef);
 
-// Crea una instancia del controlador de órdenes
-$orderController = new OrderController();
+// Obtiene la información de la dirección de facturación
+$billingAddress = getAddressById($user['billing_address_id']);
 
-// Utiliza el método confirmOrder del controlador de órdenes para confirmar la orden
-$result = $orderController->confirmOrder($userId, $orderItems, $shippingAddress, $paymentAddress);
+// Obtiene la información de la dirección de envío
+$shippingAddress = getAddressById($user['shipping_address_id']);
 
-// Verifica el resultado y redirecciona según sea necesario
-if ($result) {
-    header("Location: ../../views/order/success.php");
-    exit();
-} else {
-    header("Location: ../../views/order/failure.php");
-    exit();
-}
 ?>
 
 <!DOCTYPE html>
@@ -62,61 +30,33 @@ if ($result) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confirm Order</title>
-    <link rel="stylesheet" href="../../public/css/styles.css">
 </head>
 <body>
-    <header>
-        <h1>Confirm Order</h1>
-    </header>
 
-    <nav>
-        <!-- Navigation menu for the order confirmation interface, if needed -->
-    </nav>
+<main>
+    <h1>Confirm Your Order</h1>
 
-    <main>
-        <h2>Order Summary</h2>
+    <h2>Order Details</h2>
+    <p>Order Reference: <?php echo $order['ref']; ?></p>
+    <p>Date: <?php echo $order['date']; ?></p>
+    <p>Total Amount: $<?php echo number_format($order['total'], 2); ?></p>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Product Name</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Loop through order items and display information -->
-                <?php foreach ($orderItems as $item): ?>
-                    <tr>
-                        <td><?php echo $item->getProductName(); ?></td>
-                        <td><?php echo $item->getQuantity(); ?></td>
-                        <td><?php echo $item->getPrice(); ?></td>
-                        <td><?php echo $item->getTotal(); ?></td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+    <h2>Billing Address</h2>
+    <p><?php echo $billingAddress['street_name'] . ' ' . $billingAddress['street_nb']; ?></p>
+    <p><?php echo $billingAddress['city'] . ', ' . $billingAddress['province'] . ' ' . $billingAddress['zip_code']; ?></p>
+    <p><?php echo $billingAddress['country']; ?></p>
 
-        <p>Total: <?php echo $orderTotal; ?></p>
+    <h2>Shipping Address</h2>
+    <p><?php echo $shippingAddress['street_name'] . ' ' . $shippingAddress['street_nb']; ?></p>
+    <p><?php echo $shippingAddress['city'] . ', ' . $shippingAddress['province'] . ' ' . $shippingAddress['zip_code']; ?></p>
+    <p><?php echo $shippingAddress['country']; ?></p>
 
-        <h2>Shipping Information</h2>
-        <p><?php echo $shippingAddress->getStreetName() . ' ' . $shippingAddress->getStreetNumber(); ?></p>
-        <p><?php echo $shippingAddress->getCity() . ', ' . $shippingAddress->getProvince(); ?></p>
-        <p><?php echo $shippingAddress->getZipCode() . ', ' . $shippingAddress->getCountry(); ?></p>
+    <!-- Formulario para procesar la confirmación de la orden -->
+    <form action="process_confirm_order.php" method="post">
+        <button type="submit" name="confirm_order">Confirm Order</button>
+    </form>
+</main>
 
-        <h2>Payment Information</h2>
-        <p><?php echo $paymentAddress->getStreetName() . ' ' . $paymentAddress->getStreetNumber(); ?></p>
-        <p><?php echo $paymentAddress->getCity() . ', ' . $paymentAddress->getProvince(); ?></p>
-        <p><?php echo $paymentAddress->getZipCode() . ', ' . $paymentAddress->getCountry(); ?></p>
 
-        <form action="process_confirm_order.php" method="post">
-            <button type="submit">Confirm Order</button>
-        </form>
-    </main>
-
-    <footer>
-        <!-- Footer content, if needed -->
-    </footer>
 </body>
 </html>

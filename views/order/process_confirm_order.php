@@ -1,57 +1,33 @@
 <?php
-// Inicia la sesión
 session_start();
 
-// Verifica si el usuario está autenticado
-if (!isset($_SESSION['user_id'])) {
-    // Si no está autenticado, redirecciona a la página de inicio de sesión
-    header("Location: ../../views/auth/login.php");
+// Verifica si el usuario está autenticado, de lo contrario redirige a la página de inicio de sesión
+if (!isset($_SESSION['user'])) {
+    header('Location: login.php');
     exit();
 }
 
-// Incluye el archivo de conexión a la base de datos y la clase OrderController
-require_once('../../config/database.php');
-require_once('../../controllers/OrderController.php');
-require_once('../../models/Address.php');  // Asegúrate de tener la ruta correcta
+// Incluye la conexión a la base de datos y las funciones de utilidad
+require_once 'db.php';
 
-// Obtiene la información necesaria para confirmar la orden
-$userId = $_SESSION['user_id'];
-$orderItems = [];  // Reemplaza esto con la lógica para obtener los elementos de la orden
-$orderTotal = 0;   // Initialize $orderTotal
-// Dirección de envío por defecto
-$shippingAddress = new Address(
-    null,
-    'Calle Principal',
-    '123',
-    'Ciudad Principal',
-    'Provincia Principal',
-    '12345',
-    'País Principal'
-);
+// Obtiene la información del usuario
+$user = $_SESSION['user'];
 
-// Dirección de pago por defecto
-$paymentAddress = new Address(
-    null,
-    'Calle de Pago',
-    '456',
-    'Ciudad de Pago',
-    'Provincia de Pago',
-    '54321',
-    'País de Pago'
-);
+// Obtiene la información de la orden
+$orderRef = $_SESSION['order_ref'];
+$order = getOrderDetailsByRef($orderRef);
 
-// Crea una instancia del controlador de órdenes
-$orderController = new OrderController();
+// Obtiene la información de la dirección de facturación
+$billingAddress = getAddressById($user['billing_address_id']);
 
-// Utiliza el método confirmOrder del controlador de órdenes para confirmar la orden
-$result = $orderController->confirmOrder($userId, $orderItems, $shippingAddress, $paymentAddress);
+// Obtiene la información de la dirección de envío
+$shippingAddress = getAddressById($user['shipping_address_id']);
 
-// Verifica el resultado y redirecciona según sea necesario
-if ($result) {
-    header("Location: ../../views/order/success.php");
-    exit();
-} else {
-    header("Location: ../../views/order/failure.php");
-    exit();
-}
+// Aquí puedes realizar cualquier lógica adicional necesaria antes de procesar la orden
+
+// Por ejemplo, marcar la orden como confirmada en la base de datos
+
+// Redirige a la página de confirmación
+header('Location: confirmation.php');
+exit();
 ?>

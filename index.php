@@ -1,3 +1,43 @@
+<?php
+session_start();
+
+// Inicializa el carrito si no existe
+if (!isset($_SESSION['cart'])) {
+    $_SESSION['cart'] = [];
+}
+
+// Manejo de la adición al carrito
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['add_to_cart'])) {
+        // Obtén los detalles del producto y agrega al carrito
+        $productId = $_POST['product_id'];
+        $productName = $_POST['product_name'];
+        $productPrice = $_POST['product_price'];
+
+        // Verifica si el producto ya está en el carrito
+        $productInCart = false;
+        foreach ($_SESSION['cart'] as &$cartItem) {
+            if ($cartItem['id'] === $productId) {
+                $cartItem['quantity'] += 1; // Incrementa la cantidad
+                $productInCart = true;
+                break;
+            }
+        }
+        unset($cartItem); // Liberar la referencia explícita
+
+        // Si el producto no está en el carrito, agrégalo
+        if (!$productInCart) {
+            $_SESSION['cart'][] = [
+                'id' => $productId,
+                'name' => $productName,
+                'price' => $productPrice,
+                'quantity' => 1,
+            ];
+        }
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,11 +61,19 @@
             // Obtener el nombre del archivo (sin la ruta)
             $catName = pathinfo($catImage, PATHINFO_FILENAME);
 
-            // Mostrar cada gato con un botón para agregarlo al carrito
+            // Mostrar cada gato con un formulario para agregarlo al carrito
             echo '<div class="cat-item">';
             echo '<img src="' . $catImage . '" alt="' . $catName . '">';
             echo '<p>' . $catName . '</p>';
-            echo '<button>Add to Cart</button>';
+            
+            // Agrega un formulario con campos ocultos para enviar detalles del producto
+            echo '<form method="post">';
+            echo '<input type="hidden" name="product_id" value="' . $catName . '">';
+            echo '<input type="hidden" name="product_name" value="' . $catName . '">';
+            echo '<input type="hidden" name="product_price" value="19.99">'; // Aquí debes ajustar el precio según tus necesidades
+            echo '<button type="submit" name="add_to_cart">Add to Cart</button>';
+            echo '</form>';
+            
             echo '</div>';
         }
         ?>

@@ -1,54 +1,50 @@
 <?php
 session_start();
 
-require_once('../../config/database.php');
-
-// Verificar si el usuario está autenticado
-if (!isset($_SESSION['user_id'])) {
-    // Redirigir a la página de inicio de sesión si el usuario no está autenticado
-    header("Location: ../auth/login.php");
-    exit();
+// Inicializa el carrito si no existe
+if (!isset($_SESSION['cart'])) {
+    $_SESSION['cart'] = [];
 }
 
-// Obtener información del usuario desde la sesión
-$user_id = $_SESSION['user_id'];
-
-// Obtener información del carrito para el usuario actual
-$cart_query = "SELECT p.*, c.quantity AS cart_quantity FROM product p
-              INNER JOIN cart c ON p.id = c.product_id
-              WHERE c.user_id = $user_id";
-
-$cart_result = mysqli_query($conn, $cart_query);
-
-// Verificar si se ha enviado un formulario para actualizar la cantidad en el carrito
+// Manejo de la adición al carrito
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $product_id = $_POST['product_id'];
-    $new_quantity = $_POST['new_quantity'];
+    if (isset($_POST['add_to_cart'])) {
+        // Obtén los detalles del producto y agrega al carrito
+        $productId = $_POST['product_id'];
+        $productName = $_POST['product_name'];
+        $productPrice = $_POST['product_price'];
 
-    // Verificar la disponibilidad del producto
-    $availability_query = "SELECT quantity FROM product WHERE id = $product_id";
-    $availability_result = mysqli_query($conn, $availability_query);
-    $availability = mysqli_fetch_assoc($availability_result)['quantity'];
+        // Verifica si el producto ya está en el carrito
+        $productInCart = false;
+        foreach ($_SESSION['cart'] as &$cartItem) {
+            if ($cartItem['id'] === $productId) {
+                $cartItem['quantity'] += 1; // Incrementa la cantidad
+                $productInCart = true;
+                break;
+            }
+        }
+        unset($cartItem); // Liberar la referencia explícita
 
-    if ($new_quantity <= $availability) {
-        // Actualizar la cantidad en el carrito
-        $update_query = "UPDATE cart SET quantity = $new_quantity WHERE user_id = $user_id AND product_id = $product_id";
-        mysqli_query($conn, $update_query);
-    } else {
-        echo "La cantidad solicitada excede la disponibilidad del producto.";
+        // Si el producto no está en el carrito, agrégalo
+        if (!$productInCart) {
+            $_SESSION['cart'][] = [
+                'id' => $productId,
+                'name' => $productName,
+                'price' => $productPrice,
+                'quantity' => 1,
+            ];
+        }
+    } elseif (isset($_POST['empty_cart'])) {
+        // Vaciar el carrito al hacer clic en el botón
+        $_SESSION['cart'] = [];
     }
 }
 
-// Calcular el monto total del carrito
-$total_query = "SELECT SUM(p.price * c.quantity) AS total FROM product p
-                INNER JOIN cart c ON p.id = c.product_id
-                WHERE c.user_id = $user_id";
-
-$total_result = mysqli_query($conn, $total_query);
-$total = mysqli_fetch_assoc($total_result)['total'];
-
-// Cerrar la conexión a la base de datos
-mysqli_close($conn);
+// Suma total de los productos en el carrito
+$totalPrice = 0;
+foreach ($_SESSION['cart'] as $item) {
+    $totalPrice += $item['price'] * $item['quantity'];
+}
 ?>
 
 <!DOCTYPE html>
@@ -59,27 +55,37 @@ mysqli_close($conn);
     <title>View Cart</title>
 </head>
 <body>
-    <h1>Shopping Cart</h1>
 
-    <?php
-    // Mostrar productos en el carrito
-    while ($product = mysqli_fetch_assoc($cart_result)) {
-        echo "<div>";
-        echo "<h3>{$product['name']}</h3>";
-        echo "<p>Price: {$product['price']}</p>";
-        echo "<p>Available Quantity: {$product['quantity']}</p>";
-        echo "<form method='post' action='view_cart.php'>";
-        echo "<label for='new_quantity'>Quantity:</label>";
-        echo "<input type='number' name='new_quantity' value='{$product['cart_quantity']}' min='1' max='{$product['quantity']}'>";
-        echo "<input type='hidden' name='product_id' value='{$product['id']}'>";
-        echo "<button type='submit'>Update Quantity</button>";
-        echo "</form>";
-        echo "</div>";
-    }
+<main>
+    <h1>Your Shopping Cart</h1>
 
-    // Mostrar el monto total
-    echo "<p>Total: $total</p>";
-    ?>
+    <div class="cart-container">
+        <?php
+        // Muestra los elementos en el carrito
+        foreach ($_SESSION['cart'] as $item) {
+            echo '<div class="cart-item">';
+            echo '<p>' . $item['name'] . '</p>';
+            echo '<p>Price: $' . $item['price'] . '</p>';
+            echo '<p>Quantity: ' . $item['quantity'] . '</p>';
+            echo '</div>';
+        }
+        ?>
+
+        <!-- Muestra la suma total de los productos -->
+        <p>Total Price: $<?php echo number_format($totalPrice, 2); ?></p>
+
+        <!-- Formulario para confirmar la orden -->
+        <form action="../order/confirm_order.php" method="post">
+            <button type="submit" name="confirm_order">Confirm Order</button>
+        </form>
+
+        <!-- Formulario para vaciar el carrito -->
+        <form action="" method="post">
+            <button type="submit" name="empty_cart">Empty Cart</button>
+        </form>
+        <a href="../../index.php">Home</a>
+    </div>
+</main>
 
 </body>
 </html>
