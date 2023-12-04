@@ -1,24 +1,24 @@
 <?php
 session_start();
 
-// Verificar si el usuario está autenticado
+// Check if the user is authenticated
 if (!isset($_SESSION['user_id'])) {
-    // Redirigir a la página de inicio de sesión si el usuario no está autenticado
+    // Redirect to the login page if the user is not authenticated
     header("Location: ../auth/login.php");
     exit();
 }
 
-// Obtener el rol del usuario desde la sesión
+// Get the user's role from the session
 $user_role = $_SESSION['user_role'];
 
-// Verificar si el usuario tiene el rol de administrador
+// Check if the user has the administrator role
 if ($user_role != 1) {
-    // Redirigir a la página de inicio si el usuario no es un administrador
+    // Redirect to the homepage if the user is not an administrator
     header("Location: ../../index.php");
     exit();
 }
 
-// Si el usuario es un administrador, mostrar el panel de administración
+// If the user is an administrator, display the admin dashboard
 ?>
 
 <!DOCTYPE html>
@@ -27,8 +27,11 @@ if ($user_role != 1) {
 <head>
     <meta charset="UTF-8">
     <title>Admin Dashboard</title>
+    <!-- Include a CSS file (cursor.css) -->
     <link rel="stylesheet" href="../../public/css/cursor.css">
+
     <style>
+        /* Style for the page */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f4f4;
@@ -47,16 +50,19 @@ if ($user_role != 1) {
             margin-bottom: 20px;
         }
 
+        /* Style for the unordered list */
         ul {
             list-style-type: none;
             padding: 0;
             text-align: center;
         }
 
+        /* Style for list items */
         li {
             margin: 10px 0;
         }
 
+        /* Style for links */
         a {
             display: block;
             padding: 10px;
@@ -77,6 +83,7 @@ if ($user_role != 1) {
 <body>
     <h2>Welcome to the Admin Dashboard</h2>
 
+    <!-- Navigation menu using an unordered list -->
     <ul>
         <li><a href="../../index.php">Home</a></li>
         <li><a href="add_product.php">Add Product</a></li>

@@ -1,44 +1,49 @@
 <?php
+// Start a session
 session_start();
 
-// Verificar si el usuario está autenticado
+// Check if the user is authenticated
 if (!isset($_SESSION['user_id'])) {
-    // Redirigir a la página de inicio de sesión si el usuario no está autenticado
+    // Redirect to the login page if the user is not authenticated
     header("Location: ../auth/login.php");
     exit();
 }
 
-// Obtener el rol del usuario desde la sesión
+// Get the user role from the session
 $user_role = $_SESSION['user_role'];
 
-// Verificar si el usuario tiene el rol de administrador
+// Check if the user has the administrator role
 if ($user_role != 1) {
-    // Redirigir a la página de inicio si el usuario no es un administrador
+    // Redirect to the home page if the user is not an administrator
     header("Location: ../../index.php");
     exit();
 }
 
-// Verificar si se proporcionó el ID del usuario a actualizar
+// Check if the user ID to update is provided
 if (isset($_GET['user_id'])) {
+    // Get the user ID from the URL
     $user_id = $_GET['user_id'];
 
-    // Conectar a la base de datos (ajusta la ruta según tu estructura de archivos)
+    // Connect to the database (adjust the path based on your file structure)
     require_once('../../config/database.php');
 
-    // Consulta para actualizar el rol del usuario a 'admin'
+    // Query to update the user's role to 'admin'
     $update_query = "UPDATE `user` SET `role_id` = 1 WHERE `id` = $user_id";
     $result = mysqli_query($conn, $update_query);
 
-    // Verificar si se realizó la actualización correctamente
+    // Check if the update was successful
     if ($result) {
+        // Redirect to the dashboard after a successful update
         header("Location: dashboard.php");
     } else {
-        echo "Error al actualizar el rol del usuario: " . mysqli_error($conn);
+        // Display an error message if there's an issue with the database update
+        echo "Error updating user role: " . mysqli_error($conn);
     }
 
-    // Cierra la conexión a la base de datos
+    // Close the database connection
     mysqli_close($conn);
 } else {
-    echo "ID de usuario no proporcionado.";
+    // Display a message if the user ID is not provided
+    echo "User ID not provided.";
 }
 ?>

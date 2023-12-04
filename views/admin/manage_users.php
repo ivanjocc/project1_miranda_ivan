@@ -1,24 +1,24 @@
 <?php
 session_start();
 
-// Verificar si el usuario está autenticado
+// Check if the user is authenticated
 if (!isset($_SESSION['user_id'])) {
-    // Redirigir a la página de inicio de sesión si el usuario no está autenticado
-    header("Location: ../authlogin.php");
+    // Redirect to the login page if the user is not authenticated
+    header("Location: ../auth/login.php");
     exit();
 }
 
-// Obtener el rol del usuario desde la sesión
+// Get the user's role from the session
 $user_role = $_SESSION['user_role'];
 
-// Verificar si el usuario tiene el rol de administrador
+// Check if the user has the administrator role
 if ($user_role != 1) {
-    // Redirigir a la página de inicio si el usuario no es un administrador
+    // Redirect to the homepage if the user is not an administrator
     header("Location: ../../index.php");
     exit();
 }
 
-// Simplemente muestra la lista de usuarios por ahora
+// Simply display the list of users for now
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -26,69 +26,63 @@ if ($user_role != 1) {
 <head>
     <meta charset="UTF-8">
     <title>Manage Users</title>
-    <!DOCTYPE html>
-    <html lang="en">
+    <link rel="stylesheet" href="../../public/css/cursor.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
 
-    <head>
-        <meta charset="UTF-8">
-        <title>Manage Users</title>
-        <link rel="stylesheet" href="../../public/css/cursor.css">
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                background-color: #f4f4f4;
-                margin: 0;
-                padding: 0;
-            }
+        h2 {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
 
-            h2 {
-                background-color: #007BFF;
-                color: #fff;
-                padding: 10px;
-                text-align: center;
-            }
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: #fff;
+        }
 
-            table {
-                width: 80%;
-                margin: 20px auto;
-                border-collapse: collapse;
-                background-color: #fff;
-            }
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
 
-            th,
-            td {
-                padding: 12px;
-                text-align: left;
-                border-bottom: 1px solid #ddd;
-            }
+        th {
+            background-color: #007BFF;
+            color: #fff;
+        }
 
-            th {
-                background-color: #007BFF;
-                color: #fff;
-            }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
 
-            tr:hover {
-                background-color: #f5f5f5;
-            }
+        a {
+            text-decoration: none;
+            text-align: center;
+            color: #007BFF;
+            display: block;
+            margin-top: 10px;
+            padding: 8px;
+            background-color: #fff;
+            border: 1px solid #007BFF;
+            border-radius: 4px;
+            transition: background-color 0.3s, color 0.3s;
+        }
 
-            a {
-                text-decoration: none;
-                text-align: center;
-                color: #007BFF;
-                display: block;
-                margin-top: 10px;
-                padding: 8px;
-                background-color: #fff;
-                border: 1px solid #007BFF;
-                border-radius: 4px;
-                transition: background-color 0.3s, color 0.3s;
-            }
-
-            a:hover {
-                background-color: #007BFF;
-                color: #fff;
-            }
-        </style>
+        a:hover {
+            background-color: #007BFF;
+            color: #fff;
+        }
+    </style>
 
 </head>
 
@@ -97,15 +91,15 @@ if ($user_role != 1) {
     <a href="./dashboard.php">Dashboard</a>
 
     <?php
-    // Conecta a la base de datos (ajusta la ruta según tu estructura de archivos)
+    // Connect to the database (adjust the path based on your file structure)
     require_once('../../config/database.php');
 
-    // Consulta para obtener la lista de usuarios
+    // Query to get the list of users
     $sql = "SELECT `id`, `user_name`, `email` FROM `user`";
     $result = mysqli_query($conn, $sql);
 
     if ($result) {
-        // Muestra la lista de usuarios
+        // Display the list of users
         echo "<table border='1'>
                 <tr>
                     <th>User ID</th>
@@ -125,13 +119,13 @@ if ($user_role != 1) {
 
         echo "</table>";
 
-        // Liberar el resultado
+        // Free the result set
         mysqli_free_result($result);
     } else {
         echo "Error: " . mysqli_error($conn);
     }
 
-    // Cierra la conexión a la base de datos
+    // Close the database connection
     mysqli_close($conn);
     ?>
 </body>
