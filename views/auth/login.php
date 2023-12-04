@@ -63,6 +63,11 @@
         a:hover {
             text-decoration: underline;
         }
+
+        .error {
+            color: red;
+            margin-top: 5px;
+        }
     </style>
 
 </head>
@@ -72,14 +77,22 @@
     <form action="process_login.php" method="post">
         <!-- Add login form fields -->
         <label for="user_name">Username:</label>
-        <input type="text" name="user_name" required>
+        <input type="text" name="user_name">
         <br>
         <label for="pwd">Password:</label>
-        <input type="password" name="pwd" required>
+        <input type="password" name="pwd">
         <br>
         <input type="submit" value="Login">
     </form>
     <a href="../../index.php">Home</a>
+
+    <?php
+    // Mostrar mensajes de error si existen
+    if (isset($_GET['error'])) {
+        $error = $_GET['error'];
+        echo "<p class='error'>$error</p>";
+    }
+    ?>
 </body>
 
 </html>

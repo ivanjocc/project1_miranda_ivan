@@ -113,8 +113,6 @@ foreach ($cart_products as $product) {
     <p>Zip Code: <?php echo $zip_code; ?></p>
     <p>Country: <?php echo $country; ?></p>
 
-    <!-- Mostrar productos en el carrito -->
-    <!-- Mostrar productos en el carrito -->
     <p>Cart Products:</p>
     <ul>
         <?php foreach ($cart_products as $product) : ?>
