@@ -26,6 +26,7 @@ $user = mysqli_fetch_assoc($result);
 </head>
 <body>
     <h2>User Profile</h2>
+    <a href="../../index.php">Home</a>
     <form action="process_update_profile.php" method="post" enctype="multipart/form-data">
         <!-- Mostrar la información del usuario y agregar campos de formulario según la estructura de tu base de datos -->
         <img src="../../public/images/avatar.jpg" alt="Default Profile Picture" width="100">

@@ -37,6 +37,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (isset($_POST['empty_cart'])) {
         // Vaciar el carrito al hacer clic en el botón
         $_SESSION['cart'] = [];
+    } elseif (isset($_POST['confirm_order'])) {
+        // Redirigir a la página de confirmación de pedido
+        header("Location: ../order/confirm_order.php");
+        exit();
     }
 }
 

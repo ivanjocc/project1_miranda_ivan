@@ -1,19 +1,20 @@
 <?php
-include('../../config/database.php'); // Adjust the path accordingly
+include('../../config/database.php'); // Ajusta la ruta según sea necesario
 session_start();
 
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['shipping_address'])) {
-    // Redirect to the appropriate page or handle unauthorized access
-    header("Location: ../auth/login.php"); // Adjust the path accordingly
+// Verificar si se ha iniciado sesión y se ha enviado la información de la orden
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['shipping_address']) || !isset($_SESSION['cart_products'])) {
+    // Redirigir a la página de inicio de sesión o manejar acceso no autorizado
+    header("Location: ../auth/login.php"); // Ajusta la ruta según sea necesario
     exit();
 }
 
 $conn = $GLOBALS['conn'];
 
-// Get user information
+// Obtener información del usuario
 $user_id = $_SESSION['user_id'];
 
-// Get shipping address information
+// Obtener información de la dirección de envío
 $shipping_address = $_SESSION['shipping_address'];
 $street_name = $shipping_address['street_name'];
 $street_nb = $shipping_address['street_nb'];
@@ -22,27 +23,27 @@ $province = $shipping_address['province'];
 $zip_code = $shipping_address['zip_code'];
 $country = $shipping_address['country'];
 
-// Get products from the cart (Assuming you have the cart information stored in session)
+// Obtener productos del carrito
 $cart_products = $_SESSION['cart_products'];
 
-// Calculate total price based on the products in the cart
+// Calcular el precio total basado en los productos en el carrito
 $total_price = 0;
 foreach ($cart_products as $product) {
     $total_price += $product['quantity'] * $product['price'];
 }
 
-// Generate a reference for the order (You may adjust this based on your requirements)
+// Generar una referencia para la orden (ajustar según tus requisitos)
 $order_reference = "ORDER-" . uniqid();
 
-// Insert data into user_order table
+// Insertar datos en la tabla user_order
 $sql = "INSERT INTO `user_order` (`ref`, `date`, `total`, `user_id`) VALUES ('$order_reference', NOW(), $total_price, $user_id)";
 $result = mysqli_query($conn, $sql);
 
 if ($result) {
-    // Get the order ID for use in order_has_product table
+    // Obtener el ID de la orden para usarlo en la tabla order_has_product
     $order_id = mysqli_insert_id($conn);
 
-    // Insert data into order_has_product table for each product in the cart
+    // Insertar datos en la tabla order_has_product para cada producto en el carrito
     foreach ($cart_products as $product) {
         $product_id = $product['id'];
         $quantity = $product['quantity'];
@@ -52,15 +53,17 @@ if ($result) {
         mysqli_query($conn, $sql);
     }
 
-    // Clear the session variables
+    // Limpiar las variables de sesión
     unset($_SESSION['shipping_address']);
     unset($_SESSION['cart_products']);
 
-    // Redirect to success page
+    // Realizar otras acciones según sea necesario
+
+    // Redirigir a la página de éxito
     header("Location: success.php");
     exit();
 } else {
-    // Redirect to failure page
+    // Redirigir a la página de fallo
     header("Location: failure.php");
     exit();
 }
