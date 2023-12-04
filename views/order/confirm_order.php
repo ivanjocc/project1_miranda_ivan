@@ -1,7 +1,6 @@
 <?php
 include('../../config/database.php');
 session_start();
-var_dump($_SESSION);
 
 if (!isset($_SESSION['user_id'])) {
     // Redirigir a la página de inicio de sesión o manejar acceso no autorizado
@@ -51,11 +50,13 @@ foreach ($cart_products as $product) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confirm Order</title>
 </head>
+
 <body>
     <h1>Confirm Your Order</h1>
 
@@ -70,9 +71,10 @@ foreach ($cart_products as $product) {
     <p>Country: <?php echo $country; ?></p>
 
     <!-- Mostrar productos en el carrito -->
+    <!-- Mostrar productos en el carrito -->
     <p>Cart Products:</p>
     <ul>
-        <?php foreach ($cart_products as $product): ?>
+        <?php foreach ($cart_products as $product) : ?>
             <li>
                 <?php echo $product['name']; ?> -
                 Quantity: <?php echo $product['quantity']; ?>,
@@ -81,16 +83,20 @@ foreach ($cart_products as $product) {
         <?php endforeach; ?>
     </ul>
 
-    <!-- Mostrar el precio total -->
-    <p>Total Price: $<?php echo number_format($total_price, 2); ?></p>
-
     <!-- Formulario para enviar la orden -->
     <form action="process_confirm_order.php" method="post">
-        <!-- Agregamos un campo oculto para enviar el precio total al procesar la orden -->
+        <input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
         <input type="hidden" name="total_price" value="<?php echo $total_price; ?>">
-
+        <?php foreach ($cart_products as $product) : ?>
+            <input type="hidden" name="product_id[]" value="<?php echo $product['id']; ?>">
+            <input type="hidden" name="quantity[]" value="<?php echo $product['quantity']; ?>">
+            <input type="hidden" name="price[]" value="<?php echo $product['price']; ?>">
+        <?php endforeach; ?>
         <button type="submit">Place Order</button>
     </form>
 
+
+
 </body>
+
 </html>

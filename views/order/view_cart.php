@@ -81,10 +81,16 @@ foreach ($_SESSION['cart'] as $item) {
             <p>Total Price: $<?php echo number_format($totalPrice, 2); ?></p>
 
             <!-- Formulario para confirmar la orden -->
+            <!-- Formulario para confirmar la orden -->
             <form action="confirm_order.php" method="post">
+                <input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
+                <?php foreach ($_SESSION['cart'] as $item) : ?>
+                    <input type="hidden" name="product_id[]" value="<?php echo $item['id']; ?>">
+                    <input type="hidden" name="product_name[]" value="<?php echo $item['name']; ?>">
+                    <input type="hidden" name="product_price[]" value="<?php echo $item['price']; ?>">
+                <?php endforeach; ?>
                 <button type="submit" name="confirm_order">Confirm Order</button>
             </form>
-
 
             <!-- Formulario para vaciar el carrito -->
             <form action="" method="post">
