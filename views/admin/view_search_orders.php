@@ -22,14 +22,15 @@ require_once('../../config/database.php');
 
 // Manejar la búsqueda de órdenes
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $search_ref = $_POST['search_ref'];
+    $search_ref = mysqli_real_escape_string($conn, $_POST['search_ref']); // Evitar inyección SQL
 
-    // Consultar las órdenes que coincidan con la referencia
-    $search_query = "SELECT * FROM `user_order` WHERE `ref` = '$search_ref'";
+    // Consultar las órdenes que contengan la referencia proporcionada
+    $search_query = "SELECT * FROM `user_order` WHERE `ref` LIKE '%$search_ref%'";
     $search_result = mysqli_query($conn, $search_query);
 
     if ($search_result) {
         // Mostrar los resultados de la búsqueda
+        echo "<h2>Search Results</h2>";
         while ($order = mysqli_fetch_assoc($search_result)) {
             echo "Order ID: " . $order['id'] . "<br>";
             echo "Reference: " . $order['ref'] . "<br>";
