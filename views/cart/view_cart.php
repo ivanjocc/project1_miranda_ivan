@@ -53,43 +53,47 @@ foreach ($_SESSION['cart'] as $item) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Cart</title>
 </head>
+
 <body>
 
-<main>
-    <h1>Your Shopping Cart</h1>
+    <main>
+        <h1>Your Shopping Cart</h1>
 
-    <div class="cart-container">
-        <?php
-        // Muestra los elementos en el carrito
-        foreach ($_SESSION['cart'] as $item) {
-            echo '<div class="cart-item">';
-            echo '<p>' . $item['name'] . '</p>';
-            echo '<p>Price: $' . $item['price'] . '</p>';
-            echo '<p>Quantity: ' . $item['quantity'] . '</p>';
-            echo '</div>';
-        }
-        ?>
+        <div class="cart-container">
+            <?php
+            // Muestra los elementos en el carrito
+            foreach ($_SESSION['cart'] as $item) {
+                echo '<div class="cart-item">';
+                echo '<p>' . $item['name'] . '</p>';
+                echo '<p>Price: $' . $item['price'] . '</p>';
+                echo '<p>Quantity: ' . $item['quantity'] . '</p>';
+                echo '</div>';
+            }
+            ?>
 
-        <!-- Muestra la suma total de los productos -->
-        <p>Total Price: $<?php echo number_format($totalPrice, 2); ?></p>
+            <!-- Muestra la suma total de los productos -->
+            <p>Total Price: $<?php echo number_format($totalPrice, 2); ?></p>
 
-        <!-- Formulario para confirmar la orden -->
-        <form action="../order/confirm_order.php" method="post">
-            <button type="submit" name="confirm_order">Confirm Order</button>
-        </form>
+            <!-- Formulario para confirmar la orden -->
+            <form action="../order/confirm_order.php" method="post">
+                <button type="submit" name="confirm_order">Confirm Order</button>
+            </form>
 
-        <!-- Formulario para vaciar el carrito -->
-        <form action="" method="post">
-            <button type="submit" name="empty_cart">Empty Cart</button>
-        </form>
-        <a href="../../index.php">Home</a>
-    </div>
-</main>
+
+            <!-- Formulario para vaciar el carrito -->
+            <form action="" method="post">
+                <button type="submit" name="empty_cart">Empty Cart</button>
+            </form>
+            <a href="../../index.php">Home</a>
+        </div>
+    </main>
 
 </body>
+
 </html>

@@ -1,10 +1,10 @@
 <?php
-include('../../config/database.php'); // Ajusta la ruta según sea necesario
+include('../../config/database.php');
 session_start();
 
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['shipping_address'])) {
+if (!isset($_SESSION['user_id'])) {
     // Redirigir a la página de inicio de sesión o manejar acceso no autorizado
-    header("Location: ../auth/login.php"); // Ajusta la ruta según sea necesario
+    header("Location: ../auth/login.php");
     exit();
 }
 
@@ -13,14 +13,29 @@ $conn = $GLOBALS['conn'];
 // Obtener información del usuario
 $user_id = $_SESSION['user_id'];
 
-// Obtener información de la dirección de envío
-$shipping_address = $_SESSION['shipping_address'];
-$street_name = $shipping_address['street_name'];
-$street_nb = $shipping_address['street_nb'];
-$city = $shipping_address['city'];
-$province = $shipping_address['province'];
-$zip_code = $shipping_address['zip_code'];
-$country = $shipping_address['country'];
+// Obtener información de la dirección de envío desde la base de datos
+$sql = "SELECT u.*, a.*
+        FROM `user` u
+        JOIN `address` a ON u.shipping_address_id = a.id
+        WHERE u.id = $user_id";
+$result = mysqli_query($conn, $sql);
+
+if ($result && mysqli_num_rows($result) > 0) {
+    $row = mysqli_fetch_assoc($result);
+
+    // Obtener información de la dirección de envío
+    $street_name = $row['street_name'];
+    $street_nb = $row['street_nb'];
+    $city = $row['city'];
+    $province = $row['province'];
+    $zip_code = $row['zip_code'];
+    $country = $row['country'];
+} else {
+    // Manejar el caso en el que no se pueda obtener la información de la dirección
+    // Puedes redirigir a una página de error o realizar otra acción según tus necesidades
+    header("Location: failure.php");
+    exit();
+}
 
 // Obtener productos del carrito
 $cart_products = $_SESSION['cart'];
@@ -72,7 +87,17 @@ foreach ($cart_products as $product) {
     <form action="process_confirm_order.php" method="post">
         <!-- Puedes incluir campos adicionales según sea necesario -->
 
+        <!-- Agregamos un campo oculto para enviar el precio total al procesar la orden -->
+        <input type="hidden" name="total_price" value="<?php echo $total_price; ?>">
+
         <button type="submit">Place Order</button>
     </form>
+
+    <!-- Formulario para pagar con PayPal -->
+    <form action="process_paypal_payment.php" method="post">
+        <input type="hidden" name="total_price" value="<?php echo $total_price; ?>">
+        <button type="submit" name="paypal_payment">Pay with PayPal</button>
+    </form>
+
 </body>
 </html>

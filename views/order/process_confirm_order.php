@@ -2,8 +2,15 @@
 include('../../config/database.php'); // Ajusta la ruta según sea necesario
 session_start();
 
+// // Verificar si se ha iniciado sesión y se ha enviado la información de la orden
+// if (!isset($_SESSION['user_id']) || !isset($_SESSION['shipping_address']) || !isset($_SESSION['cart_products'])) {
+//     // Redirigir a la página de inicio de sesión o manejar acceso no autorizado
+//     header("Location: ../auth/login.php"); // Ajusta la ruta según sea necesario
+//     exit();
+// }
+
 // Verificar si se ha iniciado sesión y se ha enviado la información de la orden
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['shipping_address']) || !isset($_SESSION['cart_products'])) {
+if (!isset($_SESSION['user_id'])) {
     // Redirigir a la página de inicio de sesión o manejar acceso no autorizado
     header("Location: ../auth/login.php"); // Ajusta la ruta según sea necesario
     exit();

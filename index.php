@@ -34,6 +34,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'quantity' => 1,
             ];
         }
+
+        // Muestra una alerta de que el artículo ha sido agregado
+        echo '<script>alert("Item has been added to the cart!");</script>';
     }
 }
 ?>
