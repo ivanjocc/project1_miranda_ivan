@@ -1,13 +1,17 @@
 <?php
+// Include the database configuration file
 require_once('../../config/database.php');
 
+// Start the session
 session_start();
+
+// Redirect to the login page if the user is not authenticated
 if (!isset($_SESSION['user_id'])) {
-    // Redirigir a la página de inicio de sesión si el usuario no está autenticado
     header("Location: login.php");
     exit();
 }
 
+// Get the user ID from the session
 $user_id = $_SESSION['user_id'];
 ?>
 
@@ -96,7 +100,7 @@ $user_id = $_SESSION['user_id'];
         <input type="submit" value="Change Password">
         <a href="../../index.php">Home</a>
         <?php
-        // Mostrar mensajes de error si existen
+        // Display error messages if they exist
         if (isset($_GET['error'])) {
             $error = $_GET['error'];
             echo "<p class='error'>$error</p>";

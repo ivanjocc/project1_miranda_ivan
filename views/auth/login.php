@@ -88,7 +88,7 @@
     <a href="../../index.php">Home</a>
 
     <?php
-    // Mostrar mensajes de error si existen
+    // Display error messages if they exist
     if (isset($_GET['error'])) {
         $error = $_GET['error'];
         echo "<p class='error'>$error</p>";

@@ -1,17 +1,20 @@
 <?php
+// Include the database configuration file
 require_once('../../config/database.php');
 
-// Suponiendo que la información del usuario se almacena en una sesión después del inicio de sesión
+// Assuming that user information is stored in a session after login
 session_start();
+
+// Redirect to the login page if the user is not authenticated
 if (!isset($_SESSION['user_id'])) {
-    // Redirigir a la página de inicio de sesión si el usuario no está autenticado
     header("Location: login.php");
     exit();
 }
 
+// Get the user ID from the session
 $user_id = $_SESSION['user_id'];
 
-// Obtener la información del usuario desde la base de datos
+// Get user information from the database
 $sql = "SELECT * FROM `user` WHERE `id` = $user_id";
 $result = mysqli_query($conn, $sql);
 $user = mysqli_fetch_assoc($result);
@@ -104,7 +107,7 @@ $user = mysqli_fetch_assoc($result);
 <body>
     <h2>User Profile</h2>
     <form action="process_update_profile.php" method="post" enctype="multipart/form-data">
-        <!-- Mostrar la información del usuario y agregar campos de formulario según la estructura de tu base de datos -->
+        <!-- Display user information and add form fields based on your database structure -->
         <img src="../../public/images/avatar.jpg" alt="Default Profile Picture" width="100">
         <br>
         <label for="user_name">Username:</label>
@@ -121,13 +124,12 @@ $user = mysqli_fetch_assoc($result);
         <br>
         <input type="submit" value="Save">
         <?php
-        // Mostrar mensajes de error si existen
+        // Display error messages if they exist
         if (isset($_GET['error'])) {
             $error = $_GET['error'];
             echo "<p class='error'>$error</p>";
         }
         ?>
-
     </form>
     <a href="./change_password.php">Change password</a>
     <br>

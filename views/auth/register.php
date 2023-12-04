@@ -67,7 +67,7 @@
 <body>
     <h2>User Registration</h2>
     <form action="process_register.php" method="post">
-        <!-- Campos para la tabla 'user' -->
+        <!-- Fields for the 'user' table -->
         <label for="user_name">Username:</label>
         <input type="text" name="user_name">
         <br>
@@ -78,7 +78,7 @@
         <input type="password" name="pwd">
         <br>
 
-        <!-- Campos adicionales para la tabla 'address' -->
+        <!-- Additional fields for the 'address' table -->
         <label for="street_name">Street Name:</label>
         <input type="text" name="street_name">
         <br>
@@ -102,7 +102,7 @@
         <a href="../../index.php">Home</a>
 
         <?php
-        // Mostrar mensajes de error si existen
+        // Display error messages if they exist
         if (isset($_GET['error'])) {
             $error = $_GET['error'];
             echo "<p style='color:red'>$error</p>";
