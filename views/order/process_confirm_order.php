@@ -1,18 +1,11 @@
 <?php
-include('../../config/database.php'); // Ajusta la ruta según sea necesario
+include('../../config/database.php');
 session_start();
 
-// // Verificar si se ha iniciado sesión y se ha enviado la información de la orden
-// if (!isset($_SESSION['user_id']) || !isset($_SESSION['shipping_address']) || !isset($_SESSION['cart_products'])) {
-//     // Redirigir a la página de inicio de sesión o manejar acceso no autorizado
-//     header("Location: ../auth/login.php"); // Ajusta la ruta según sea necesario
-//     exit();
-// }
-
 // Verificar si se ha iniciado sesión y se ha enviado la información de la orden
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['cart_products'])) {
     // Redirigir a la página de inicio de sesión o manejar acceso no autorizado
-    header("Location: ../auth/login.php"); // Ajusta la ruta según sea necesario
+    header("Location: ../auth/login.php");
     exit();
 }
 
@@ -20,15 +13,6 @@ $conn = $GLOBALS['conn'];
 
 // Obtener información del usuario
 $user_id = $_SESSION['user_id'];
-
-// Obtener información de la dirección de envío
-$shipping_address = $_SESSION['shipping_address'];
-$street_name = $shipping_address['street_name'];
-$street_nb = $shipping_address['street_nb'];
-$city = $shipping_address['city'];
-$province = $shipping_address['province'];
-$zip_code = $shipping_address['zip_code'];
-$country = $shipping_address['country'];
 
 // Obtener productos del carrito
 $cart_products = $_SESSION['cart_products'];
@@ -61,7 +45,6 @@ if ($result) {
     }
 
     // Limpiar las variables de sesión
-    unset($_SESSION['shipping_address']);
     unset($_SESSION['cart_products']);
 
     // Realizar otras acciones según sea necesario

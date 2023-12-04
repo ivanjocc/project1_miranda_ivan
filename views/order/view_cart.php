@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['cart'] = [];
     } elseif (isset($_POST['confirm_order'])) {
         // Redirigir a la página de confirmación de pedido
-        header("Location: ../order/confirm_order.php");
+        header("Location: confirm_order.php");
         exit();
     }
 }
@@ -81,7 +81,7 @@ foreach ($_SESSION['cart'] as $item) {
             <p>Total Price: $<?php echo number_format($totalPrice, 2); ?></p>
 
             <!-- Formulario para confirmar la orden -->
-            <form action="../order/confirm_order.php" method="post">
+            <form action="confirm_order.php" method="post">
                 <button type="submit" name="confirm_order">Confirm Order</button>
             </form>
 

@@ -1,6 +1,7 @@
 <?php
 include('../../config/database.php');
 session_start();
+var_dump($_SESSION);
 
 if (!isset($_SESSION['user_id'])) {
     // Redirigir a la página de inicio de sesión o manejar acceso no autorizado

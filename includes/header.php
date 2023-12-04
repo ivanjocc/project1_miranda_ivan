@@ -17,7 +17,7 @@
                 <li><a href="views/auth/register.php">Register</a></li>
                 <li><a href="views/auth/login.php">Login</a></li>
                 <li><a href="views/auth/profile.php">Profile</a></li>
-                <li> <a href="views/cart/view_cart.php">Cart</a></li>
+                <li> <a href="views/order/view_cart.php">Cart</a></li>
             </ul>
         </nav>
         <div id="logo">
