@@ -1,38 +1,38 @@
 <?php
 session_start();
 
-// Verifica si el usuario ha iniciado sesión
+// Check if the user is logged in
 if (!isset($_SESSION['user_id'])) {
-    // El usuario no ha iniciado sesión, redirige a la página de login
+    // User is not logged in, redirect to the login page
     header("Location: ../auth/login.php");
     exit();
 }
 
-// Inicializa el carrito si no existe
+// Initialize the cart if it doesn't exist
 if (!isset($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
 }
 
-// Manejo de la adición al carrito
+// Handling addition to the cart
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['add_to_cart'])) {
-        // Obtén los detalles del producto y agrega al carrito
+        // Get product details and add to the cart
         $productId = $_POST['product_id'];
         $productName = $_POST['product_name'];
         $productPrice = $_POST['product_price'];
 
-        // Verifica si el producto ya está en el carrito
+        // Check if the product is already in the cart
         $productInCart = false;
         foreach ($_SESSION['cart'] as &$cartItem) {
             if ($cartItem['id'] === $productId) {
-                $cartItem['quantity'] += 1; // Incrementa la cantidad
+                $cartItem['quantity'] += 1; // Increment the quantity
                 $productInCart = true;
                 break;
             }
         }
-        unset($cartItem); // Liberar la referencia explícita
+        unset($cartItem); // Release the explicit reference
 
-        // Si el producto no está en el carrito, agrégalo
+        // If the product is not in the cart, add it
         if (!$productInCart) {
             $_SESSION['cart'][] = [
                 'id' => $productId,
@@ -42,16 +42,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ];
         }
     } elseif (isset($_POST['empty_cart'])) {
-        // Vaciar el carrito al hacer clic en el botón
+        // Empty the cart when the button is clicked
         $_SESSION['cart'] = [];
     } elseif (isset($_POST['confirm_order'])) {
-        // Redirigir a la página de confirmación de pedido
+        // Redirect to the order confirmation page
         header("Location: confirm_order.php");
         exit();
     }
 }
 
-// Suma total de los productos en el carrito
+// Calculate total price of products in the cart
 $totalPrice = 0;
 foreach ($_SESSION['cart'] as $item) {
     $totalPrice += $item['price'] * $item['quantity'];
@@ -138,7 +138,7 @@ foreach ($_SESSION['cart'] as $item) {
 
         <div class="cart-container">
             <?php
-            // Muestra los elementos en el carrito
+            // Display items in the cart
             foreach ($_SESSION['cart'] as $item) {
                 echo '<div class="cart-item">';
                 echo '<p>' . $item['name'] . '</p>';
@@ -148,11 +148,10 @@ foreach ($_SESSION['cart'] as $item) {
             }
             ?>
 
-            <!-- Muestra la suma total de los productos -->
+            <!-- Display total price of products -->
             <p>Total Price: $<?php echo number_format($totalPrice, 2); ?></p>
 
-            <!-- Formulario para confirmar la orden -->
-            <!-- Formulario para confirmar la orden -->
+            <!-- Form to confirm the order -->
             <form action="confirm_order.php" method="post">
                 <input type="hidden" name="user_id" value="<?php echo $user_id; ?>">
                 <?php foreach ($_SESSION['cart'] as $item) : ?>
@@ -164,7 +163,7 @@ foreach ($_SESSION['cart'] as $item) {
             </form>
             <br>
 
-            <!-- Formulario para vaciar el carrito -->
+            <!-- Form to empty the cart -->
             <form action="" method="post">
                 <button type="submit" name="empty_cart">Empty Cart</button>
             </form>

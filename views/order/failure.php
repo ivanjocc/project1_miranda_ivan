@@ -16,7 +16,7 @@
 
         header {
             background-color: #ff0000;
-            /* Rojo para indicar un error */
+            /* Red to indicate an error */
             color: #fff;
             padding: 10px;
             text-align: center;
@@ -38,7 +38,7 @@
         a {
             display: inline-block;
             background-color: #ff0000;
-            /* Rojo para combinar con el encabezado */
+            /* Red to match the header */
             color: #fff;
             padding: 10px 15px;
             text-decoration: none;
@@ -47,7 +47,7 @@
 
         a:hover {
             background-color: #cc0000;
-            /* Un tono más oscuro de rojo al pasar el ratón */
+            /* A darker shade of red on hover */
         }
     </style>
 </head>

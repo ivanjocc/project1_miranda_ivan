@@ -1,31 +1,31 @@
 <?php
 session_start();
 
-// Inicializa el carrito si no existe
+// Initialize the cart if it doesn't exist
 if (!isset($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
 }
 
-// Manejo de la adición al carrito
+// Handling addition to the cart
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['add_to_cart'])) {
-        // Obtén los detalles del producto y agrega al carrito
+        // Get product details and add to the cart
         $productId = $_POST['product_id'];
         $productName = $_POST['product_name'];
         $productPrice = $_POST['product_price'];
 
-        // Verifica si el producto ya está en el carrito
+        // Check if the product is already in the cart
         $productInCart = false;
         foreach ($_SESSION['cart'] as &$cartItem) {
             if ($cartItem['id'] === $productId) {
-                $cartItem['quantity'] += 1; // Incrementa la cantidad
+                $cartItem['quantity'] += 1; // Increment the quantity
                 $productInCart = true;
                 break;
             }
         }
-        unset($cartItem); // Liberar la referencia explícita
+        unset($cartItem); // Release the explicit reference
 
-        // Si el producto no está en el carrito, agrégalo
+        // If the product is not in the cart, add it
         if (!$productInCart) {
             $_SESSION['cart'][] = [
                 'id' => $productId,
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ];
         }
 
-        // Muestra una alerta de que el artículo ha sido agregado
+        // Display an alert that the item has been added
         echo '<script>alert("Item has been added to the cart!");</script>';
     }
 }
@@ -145,19 +145,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div class="cat-container">
         <?php
-        // Obtener la lista de gatos desde el directorio de imágenes
+        // Get the list of cat images from the images directory
         $catImages = glob('public/img/*.jpg');
         
         foreach ($catImages as $catImage) {
-            // Obtener el nombre del archivo (sin la ruta)
+            // Get the filename (without the path)
             $catName = pathinfo($catImage, PATHINFO_FILENAME);
 
-            // Mostrar cada gato con un formulario para agregarlo al carrito
+            // Display each cat with a form to add it to the cart
             echo '<div class="cat-item">';
             echo '<img src="' . $catImage . '" alt="' . $catName . '">';
             echo '<p>' . $catName . '</p>';
             
-            // Agrega un formulario con campos ocultos para enviar detalles del producto
+            // Add a form with hidden fields to send product details
             echo '<form method="post">';
             echo '<input type="hidden" name="product_id" value="' . $catName . '">';
             echo '<input type="hidden" name="product_name" value="' . $catName . '">';
