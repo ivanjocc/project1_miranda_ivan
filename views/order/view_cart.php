@@ -65,6 +65,69 @@ foreach ($_SESSION['cart'] as $item) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Cart</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .cart-container {
+            margin-top: 20px;
+        }
+
+        .cart-item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .cart-item p {
+            margin: 5px 0;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 
 <body>
@@ -98,6 +161,7 @@ foreach ($_SESSION['cart'] as $item) {
                 <?php endforeach; ?>
                 <button type="submit" name="confirm_order">Confirm Order</button>
             </form>
+            <br>
 
             <!-- Formulario para vaciar el carrito -->
             <form action="" method="post">

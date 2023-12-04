@@ -48,17 +48,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cat Shop</title>
     <style>
-        /* Custom styles for adjusting image size and spacing */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            background-color: #f8f9fa; /* Background color for the entire page */
+            background-color: #f8f9fa;
         }
 
         header {
-            background-color: #343a40; /* Header background color */
+            background-color: #343a40;
             color: white;
             padding: 15px;
             text-align: center;
@@ -70,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             list-style-type: none;
             padding: 0;
             margin: 0;
-            background-color: #343a40; /* Navigation background color */
+            background-color: #343a40;
         }
 
         nav a {
@@ -82,25 +81,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         main {
             max-width: 1200px;
             margin: 20px auto;
+            padding-bottom: 30px;
         }
 
         .cat-container {
             display: flex;
             flex-wrap: wrap;
             justify-content: space-around;
+            padding-top: 20px;
+            padding-bottom: 20px;
         }
 
         .cat-item img {
             width: 100%;
-            max-height: 200px; /* Altura máxima de las imágenes */
-            object-fit: cover; /* Mantiene la relación de aspecto y cubre el contenedor */
+            max-height: 200px;
+            object-fit: cover;
             border-bottom: 1px solid #ddd;
-        }
-
-        .cat-item img {
-            width: 100%; /* Make the image fill the container */
-            height: auto; /* Maintain aspect ratio */
-            border-bottom: 1px solid #ddd; /* Border between image and details */
+            padding-top: 20px;
+            border-radius: 20px;
         }
 
         .cat-item-details {
@@ -114,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         button {
-            background-color: #007bff; /* Button background color */
+            background-color: #007bff;
             color: white;
             padding: 8px 16px;
             border: none;
@@ -123,11 +121,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         button:hover {
-            background-color: #0056b3; /* Button background color on hover */
+            background-color: #0056b3;
         }
 
         footer {
-            background-color: #343a40; /* Footer background color */
+            background-color: #343a40;
             color: white;
             text-align: center;
             padding: 15px;
@@ -162,7 +160,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo '<form method="post">';
             echo '<input type="hidden" name="product_id" value="' . $catName . '">';
             echo '<input type="hidden" name="product_name" value="' . $catName . '">';
-            echo '<input type="hidden" name="product_price" value="19.99">'; // Aquí debes ajustar el precio según tus necesidades
+            echo '<input type="hidden" name="product_price" value="19.99">';
             echo '<button type="submit" name="add_to_cart">Add to Cart</button>';
             echo '</form>';
             
