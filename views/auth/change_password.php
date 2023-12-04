@@ -1,7 +1,6 @@
 <?php
 require_once('../../config/database.php');
 
-// Suponiendo que la información del usuario se almacena en una sesión después del inicio de sesión
 session_start();
 if (!isset($_SESSION['user_id'])) {
     // Redirigir a la página de inicio de sesión si el usuario no está autenticado
@@ -74,6 +73,10 @@ $user_id = $_SESSION['user_id'];
             text-decoration: underline;
             color: #2a78ad;
         }
+
+        .error {
+            color: red;
+        }
     </style>
 </head>
 
@@ -81,16 +84,23 @@ $user_id = $_SESSION['user_id'];
     <h2>Change Password</h2>
     <form action="process_change_password.php" method="post">
         <label for="current_password">Current Password:</label>
-        <input type="password" name="current_password" required>
+        <input type="password" name="current_password">
         <br>
         <label for="new_password">New Password:</label>
-        <input type="password" name="new_password" required>
+        <input type="password" name="new_password">
         <br>
         <label for="confirm_new_password">Confirm New Password:</label>
-        <input type="password" name="confirm_new_password" required>
+        <input type="password" name="confirm_new_password">
         <br>
         <input type="submit" value="Change Password">
         <a href="../../index.php">Home</a>
+        <?php
+        // Mostrar mensajes de error si existen
+        if (isset($_GET['error'])) {
+            $error = $_GET['error'];
+            echo "<p class='error'>$error</p>";
+        }
+        ?>
     </form>
 </body>
 

@@ -2,6 +2,23 @@
 require_once('../../config/database.php');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Verificar campos vacíos
+    $required_fields = ['user_name', 'email', 'pwd', 'street_name', 'street_nb', 'city', 'province', 'zip_code', 'country'];
+    $errors = [];
+
+    foreach ($required_fields as $field) {
+        if (empty($_POST[$field])) {
+            $errors[] = "The '$field' field is required.";
+        }
+    }
+
+    if (!empty($errors)) {
+        // Redirigir con mensajes de error
+        $error_message = implode("<br>", $errors);
+        header("Location: register.php?error=$error_message");
+        exit();
+    }
+
     // Recibir datos del formulario
     $user_name = $_POST['user_name'];
     $email = $_POST['email'];
