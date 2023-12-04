@@ -47,6 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cat Shop</title>
+    <link rel="stylesheet" href="./public/css/cursor.css">
     <style>
         body {
             font-family: Arial, sans-serif;

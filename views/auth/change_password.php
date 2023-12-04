@@ -17,6 +17,7 @@ $user_id = $_SESSION['user_id'];
 <head>
     <meta charset="UTF-8">
     <title>Change Password</title>
+    <link rel="stylesheet" href="../../public/css/cursor.css">
     <style>
         body {
             font-family: Arial, sans-serif;

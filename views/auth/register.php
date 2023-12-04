@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>User Registration</title>
+    <link rel="stylesheet" href="../../public/css/cursor.css">
     <style>
         body {
             font-family: Arial, sans-serif;

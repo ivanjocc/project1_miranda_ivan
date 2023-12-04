@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Orders</title>
+    <link rel="stylesheet" href="../../public/css/cursor.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -92,7 +93,7 @@
 
 <body>
     <h1>Search Orders</h1>
-    <span style="color: red; font-weight: bold;">Note: Write 'order' and click in 'Search' to see all the orders</span>
+    <span style="color: red; font-weight: bold;">Note: Write 'ord' and click in 'Search' to see all the orders</span>
 
     <!-- Formulario de búsqueda -->
     <form action="view_search_orders.php" method="post">
