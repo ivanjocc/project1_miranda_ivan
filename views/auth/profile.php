@@ -92,6 +92,10 @@ $user = mysqli_fetch_assoc($result);
             border-radius: 50%;
             margin-bottom: 10px;
         }
+
+        .error {
+            color: red;
+        }
     </style>
 
 </head>
@@ -103,18 +107,26 @@ $user = mysqli_fetch_assoc($result);
         <img src="../../public/images/avatar.jpg" alt="Default Profile Picture" width="100">
         <br>
         <label for="user_name">Username:</label>
-        <input type="text" name="user_name" value="<?php echo $user['user_name']; ?>" required readonly>
+        <input type="text" name="user_name" value="<?php echo $user['user_name']; ?>" readonly>
         <br>
         <label for="email">Email:</label>
-        <input type="email" name="email" value="<?php echo $user['email']; ?>" required>
+        <input type="email" name="email" value="<?php echo $user['email']; ?>">
         <br>
         <label for="fname">First Name:</label>
-        <input type="text" name="fname" value="<?php echo $user['fname']; ?>" required>
+        <input type="text" name="fname" value="<?php echo $user['fname']; ?>">
         <br>
         <label for="lname">Last Name:</label>
-        <input type="text" name="lname" value="<?php echo $user['lname']; ?>" required>
+        <input type="text" name="lname" value="<?php echo $user['lname']; ?>">
         <br>
         <input type="submit" value="Save">
+        <?php
+        // Mostrar mensajes de error si existen
+        if (isset($_GET['error'])) {
+            $error = $_GET['error'];
+            echo "<p class='error'>$error</p>";
+        }
+        ?>
+
     </form>
     <a href="./change_password.php">Change password</a>
     <br>
