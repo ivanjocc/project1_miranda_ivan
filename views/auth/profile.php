@@ -19,13 +19,85 @@ $user = mysqli_fetch_assoc($result);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>User Profile</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h2 {
+            color: #333;
+            text-align: center;
+            padding-top: 40px;
+            margin-bottom: 20px;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 16px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #007BFF;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        a:last-child {
+            padding-bottom: 30px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        img {
+            border-radius: 50%;
+            margin-bottom: 10px;
+        }
+    </style>
+
 </head>
+
 <body>
     <h2>User Profile</h2>
-    <a href="../../index.php">Home</a>
     <form action="process_update_profile.php" method="post" enctype="multipart/form-data">
         <!-- Mostrar la información del usuario y agregar campos de formulario según la estructura de tu base de datos -->
         <img src="../../public/images/avatar.jpg" alt="Default Profile Picture" width="100">
@@ -47,5 +119,8 @@ $user = mysqli_fetch_assoc($result);
     <a href="./change_password.php">Change password</a>
     <br>
     <a href="./logout.php">Log out</a>
+    <br>
+    <a href="../../index.php">Home</a>
 </body>
+
 </html>

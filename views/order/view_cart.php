@@ -1,6 +1,13 @@
 <?php
 session_start();
 
+// Verifica si el usuario ha iniciado sesión
+if (!isset($_SESSION['user_id'])) {
+    // El usuario no ha iniciado sesión, redirige a la página de login
+    header("Location: ../auth/login.php");
+    exit();
+}
+
 // Inicializa el carrito si no existe
 if (!isset($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
