@@ -1,11 +1,52 @@
+<?php
+session_start();
+
+// Inicializa el carrito si no existe
+if (!isset($_SESSION['cart'])) {
+    $_SESSION['cart'] = [];
+}
+
+// Manejo de la adición al carrito
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['add_to_cart'])) {
+        // Obtén los detalles del producto y agrega al carrito
+        $productId = $_POST['product_id'];
+        $productName = $_POST['product_name'];
+        $productPrice = $_POST['product_price'];
+
+        // Verifica si el producto ya está en el carrito
+        $productInCart = false;
+        foreach ($_SESSION['cart'] as &$cartItem) {
+            if ($cartItem['id'] === $productId) {
+                $cartItem['quantity'] += 1; // Incrementa la cantidad
+                $productInCart = true;
+                break;
+            }
+        }
+        unset($cartItem); // Liberar la referencia explícita
+
+        // Si el producto no está en el carrito, agrégalo
+        if (!$productInCart) {
+            $_SESSION['cart'][] = [
+                'id' => $productId,
+                'name' => $productName,
+                'price' => $productPrice,
+                'quantity' => 1,
+            ];
+        }
+
+        // Muestra una alerta de que el artículo ha sido agregado
+        echo '<script>alert("Item has been added to the cart!");</script>';
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cat Shop</title>
-
     <style>
         /* Custom styles for adjusting image size and spacing */
         body {
@@ -96,57 +137,42 @@
         }
     </style>
 </head>
-
 <body>
 
-    <header>
-        <nav>
-            <a href="index.php">Home</a>
-            <a href="views/auth/register.php">Register</a>
-            <a href="views/auth/login.php">Login</a>
-            <a href="views/auth/profile.php">Profile</a>
-            <a href="views/order/view_cart.php">Cart</a>
-        </nav>
-    </header>
+<?php include 'includes/header.php'; ?>
 
-    <main>
-        <h1>Welcome to the Cat Shop</h1>
+<main>
+    <h1>Welcome to the Cat Shop</h1>
 
-        <div class="cat-container">
-            <?php
-            // Get the list of cat images from the images directory
-            $catImages = glob('public/img/*.jpg');
+    <div class="cat-container">
+        <?php
+        // Obtener la lista de gatos desde el directorio de imágenes
+        $catImages = glob('public/img/*.jpg');
+        
+        foreach ($catImages as $catImage) {
+            // Obtener el nombre del archivo (sin la ruta)
+            $catName = pathinfo($catImage, PATHINFO_FILENAME);
 
-            foreach ($catImages as $catImage) {
-                // Get the filename (without the path)
-                $catName = pathinfo($catImage, PATHINFO_FILENAME);
+            // Mostrar cada gato con un formulario para agregarlo al carrito
+            echo '<div class="cat-item">';
+            echo '<img src="' . $catImage . '" alt="' . $catName . '">';
+            echo '<p>' . $catName . '</p>';
+            
+            // Agrega un formulario con campos ocultos para enviar detalles del producto
+            echo '<form method="post">';
+            echo '<input type="hidden" name="product_id" value="' . $catName . '">';
+            echo '<input type="hidden" name="product_name" value="' . $catName . '">';
+            echo '<input type="hidden" name="product_price" value="19.99">'; // Aquí debes ajustar el precio según tus necesidades
+            echo '<button type="submit" name="add_to_cart">Add to Cart</button>';
+            echo '</form>';
+            
+            echo '</div>';
+        }
+        ?>
+    </div>
+</main>
 
-                // Display each cat with a form to add it to the cart
-                echo '<div class="cat-item">';
-                echo '<img src="' . $catImage . '" alt="' . $catName . '">';
-                echo '<div class="cat-item-details">';
-                echo '<h5>' . $catName . '</h5>';
-
-                // Add a form with hidden fields to send product details
-                echo '<form method="post">';
-                echo '<input type="hidden" name="product_id" value="' . $catName . '">';
-                echo '<input type="hidden" name="product_name" value="' . $catName . '">';
-                echo '<input type="hidden" name="product_price" value="19.99">'; // Adjust the price as needed
-                echo '<button type="submit" name="add_to_cart">Add to Cart</button>';
-                echo '</form>';
-
-                echo '</div>';
-                echo '</div>';
-            }
-            ?>
-        </div>
-    </main>
-    <br>
-
-    <?php
-    include('./includes/footer.php');
-    ?>
+<?php include 'includes/footer.php'; ?>
 
 </body>
-
 </html>

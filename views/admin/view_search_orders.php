@@ -1,3 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Orders</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1,
+        h2 {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        form {
+            width: 50%;
+            margin: 20px auto;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .dashboard-link {
+            display: block;
+            text-align: center;
+            margin-top: 10px;
+            padding: 10px 15px;
+            color: #fff;
+            background-color: #28a745;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .dashboard-link:hover {
+            background-color: #218838;
+        }
+
+        hr {
+            margin: 20px 0;
+            border: 0;
+            border-top: 1px solid #ddd;
+        }
+
+        h2 {
+            margin-top: 20px;
+        }
+
+        Order ID,
+        Reference,
+        Date,
+        Total,
+        User ID {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Search Orders</h1>
+    <span style="color: red; font-weight: bold;">Note: Write 'order' and click in 'Search' to see all the orders</span>
+
+    <!-- Formulario de búsqueda -->
+    <form action="view_search_orders.php" method="post">
+        <label for="search_ref">Search by Reference:</label>
+        <input type="text" name="search_ref" required>
+        <button type="submit">Search</button>
+    </form>
+
+    <!-- Botón de Dashboard -->
+    <a class="dashboard-link" href="./dashboard.php">Dashboard</a>
+</body>
+
+</html>
+
 <?php
 session_start();
 
@@ -48,21 +157,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 mysqli_close($conn);
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Orders</title>
-</head>
-<body>
-    <h1>Search Orders</h1>
-
-    <!-- Formulario de búsqueda -->
-    <form action="view_search_orders.php" method="post">
-        <label for="search_ref">Search by Reference:</label>
-        <input type="text" name="search_ref" required>
-        <button type="submit">Search</button>
-    </form>
-</body>
-</html>

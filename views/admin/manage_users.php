@@ -22,12 +22,78 @@ if ($user_role != 1) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Manage Users</title>
+    <!DOCTYPE html>
+    <html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Manage Users</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
+            }
+
+            h2 {
+                background-color: #007BFF;
+                color: #fff;
+                padding: 10px;
+                text-align: center;
+            }
+
+            table {
+                width: 80%;
+                margin: 20px auto;
+                border-collapse: collapse;
+                background-color: #fff;
+            }
+
+            th,
+            td {
+                padding: 12px;
+                text-align: left;
+                border-bottom: 1px solid #ddd;
+            }
+
+            th {
+                background-color: #007BFF;
+                color: #fff;
+            }
+
+            tr:hover {
+                background-color: #f5f5f5;
+            }
+
+            a {
+                text-decoration: none;
+                text-align: center;
+                color: #007BFF;
+                display: block;
+                margin-top: 10px;
+                padding: 8px;
+                background-color: #fff;
+                border: 1px solid #007BFF;
+                border-radius: 4px;
+                transition: background-color 0.3s, color 0.3s;
+            }
+
+            a:hover {
+                background-color: #007BFF;
+                color: #fff;
+            }
+        </style>
+
 </head>
+
 <body>
     <h2>User List</h2>
+    <a href="./dashboard.php">Dashboard</a>
 
     <?php
     // Conecta a la base de datos (ajusta la ruta según tu estructura de archivos)
@@ -52,7 +118,7 @@ if ($user_role != 1) {
                     <td>{$row['id']}</td>
                     <td>{$row['user_name']}</td>
                     <td>{$row['email']}</td>
-                    <td><a href='upgrade_user.php?user_id={$row['id']}'>Admin</a> | <a href='delete_user.php?user_id={$row['id']}'>Delete</a></td>
+                    <td><a href='upgrade_user.php?user_id={$row['id']}'>Admin</a>  <a href='delete_user.php?user_id={$row['id']}'>Delete</a></td>
                 </tr>";
         }
 
@@ -68,4 +134,5 @@ if ($user_role != 1) {
     mysqli_close($conn);
     ?>
 </body>
+
 </html>
