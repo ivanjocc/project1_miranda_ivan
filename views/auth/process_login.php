@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_name = $_POST['user_name'];
     $password = $_POST['pwd'];
 
-    // Fetch user data from the database based on the provided username
+    // Fetch user data from the database based on the provided username using prepared statement
     $sql = "SELECT * FROM `user` WHERE `user_name` = ?";
     $stmt = mysqli_prepare($conn, $sql);
     mysqli_stmt_bind_param($stmt, 's', $user_name);
@@ -40,6 +40,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: login.php?error=Database error");
         exit();
     }
+
+    // Close the prepared statement
+    mysqli_stmt_close($stmt);
 } else {
     // Redirect with an error message
     header("Location: login.php?error=Access not allowed");
