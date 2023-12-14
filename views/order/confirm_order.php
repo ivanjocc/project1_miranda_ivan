@@ -17,12 +17,15 @@ $conn = $GLOBALS['conn'];
 // Get user information
 $user_id = $_SESSION['user_id'];
 
-// Get shipping address information from the database
+// Get shipping address information from the database using prepared statement
 $sql = "SELECT u.*, a.*
         FROM `user` u
         JOIN `address` a ON u.shipping_address_id = a.id
-        WHERE u.id = $user_id";
-$result = mysqli_query($conn, $sql);
+        WHERE u.id = ?";
+$stmt = mysqli_prepare($conn, $sql);
+mysqli_stmt_bind_param($stmt, "i", $user_id);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
 
 // Check if query was successful and user information is available
 if ($result && mysqli_num_rows($result) > 0) {
@@ -36,8 +39,6 @@ if ($result && mysqli_num_rows($result) > 0) {
     $zip_code = $row['zip_code'];
     $country = $row['country'];
 } else {
-    // Handle the case where shipping information cannot be retrieved
-    // You can redirect to an error page or take other actions as needed
     header("Location: failure.php");
     exit();
 }
@@ -47,9 +48,27 @@ $cart_products = $_SESSION['cart'];
 
 // Calculate total price based on products in the cart
 $total_price = 0;
+
+// Prepare a statement for fetching product details
+$product_sql = "SELECT * FROM `product` WHERE `id` = ?";
+$product_stmt = mysqli_prepare($conn, $product_sql);
+
 foreach ($cart_products as $product) {
-    $total_price += $product['quantity'] * $product['price'];
+    // Execute the prepared statement to get product details
+    mysqli_stmt_bind_param($product_stmt, "i", $product['id']);
+    mysqli_stmt_execute($product_stmt);
+    $product_result = mysqli_stmt_get_result($product_stmt);
+
+    if ($product_result && mysqli_num_rows($product_result) > 0) {
+        $product_row = mysqli_fetch_assoc($product_result);
+
+        // Calculate total price for the product
+        $total_price += $product['quantity'] * $product_row['price'];
+    }
 }
+
+// Close the prepared statement for product details
+mysqli_stmt_close($product_stmt);
 ?>
 
 <!DOCTYPE html>
