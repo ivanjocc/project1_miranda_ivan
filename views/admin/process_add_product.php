@@ -23,10 +23,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Move the file to the images folder
     if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
-        // Insert the new product into the database
+        // Insert the new product into the database using prepared statement
         $imgPath = "public/img/" . basename($_FILES["image"]["name"]);
-        $insertQuery = "INSERT INTO `product` (`name`, `quantity`, `price`, `img_url`, `description`, `img_path`) VALUES ('$name', $quantity, $price, '$imgPath', '$description', '$targetFile')";
-        $result = mysqli_query($conn, $insertQuery);
+        $insertQuery = "INSERT INTO `product` (`name`, `quantity`, `price`, `img_url`, `description`, `img_path`) VALUES (?, ?, ?, ?, ?, ?)";
+        $stmt = mysqli_prepare($conn, $insertQuery);
+
+        // Bind the parameters
+        mysqli_stmt_bind_param($stmt, "sddsss", $name, $quantity, $price, $imgPath, $description, $targetFile);
+
+        // Execute the prepared statement
+        $result = mysqli_stmt_execute($stmt);
 
         // Check if the insertion was successful
         if ($result) {
@@ -36,6 +42,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Display an error message if there's an issue with the database insertion
             echo "Error adding the product: " . mysqli_error($conn);
         }
+
+        // Close the prepared statement
+        mysqli_stmt_close($stmt);
     } else {
         // Display an error message if there's an issue with the image upload
         echo "Error uploading the image.";

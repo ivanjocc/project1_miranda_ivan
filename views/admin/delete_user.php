@@ -25,11 +25,17 @@ if (isset($_GET['user_id'])) {
     // Connect to the database (adjust the path based on your file structure)
     require_once('../../config/database.php');
 
-    // Query to delete the user
-    $delete_query = "DELETE FROM `user` WHERE `id` = $user_id";
+    // Query to delete the user using prepared statement
+    $delete_query = "DELETE FROM `user` WHERE `id` = ?";
     
+    // Prepare the delete query
+    $stmt = mysqli_prepare($conn, $delete_query);
+
+    // Bind the user_id parameter
+    mysqli_stmt_bind_param($stmt, "i", $user_id);
+
     // Execute the delete query
-    $result = mysqli_query($conn, $delete_query);
+    $result = mysqli_stmt_execute($stmt);
 
     // Check if the deletion was successful
     if ($result) {
@@ -37,6 +43,9 @@ if (isset($_GET['user_id'])) {
     } else {
         echo "Error deleting user: " . mysqli_error($conn);
     }
+
+    // Close the prepared statement
+    mysqli_stmt_close($stmt);
 
     // Close the database connection
     mysqli_close($conn);

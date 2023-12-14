@@ -94,11 +94,17 @@ if ($user_role != 1) {
     // Connect to the database (adjust the path based on your file structure)
     require_once('../../config/database.php');
 
-    // Query to get the list of users
+    // Query to get the list of users using prepared statement
     $sql = "SELECT `id`, `user_name`, `email` FROM `user`";
-    $result = mysqli_query($conn, $sql);
+    $stmt = mysqli_prepare($conn, $sql);
+
+    // Execute the prepared statement
+    $result = mysqli_stmt_execute($stmt);
 
     if ($result) {
+        // Bind the result variables
+        mysqli_stmt_bind_result($stmt, $user_id, $user_name, $email);
+
         // Display the list of users
         echo "<table border='1'>
                 <tr>
@@ -108,19 +114,19 @@ if ($user_role != 1) {
                     <th>Action</th>
                 </tr>";
 
-        while ($row = mysqli_fetch_assoc($result)) {
+        while (mysqli_stmt_fetch($stmt)) {
             echo "<tr>
-                    <td>{$row['id']}</td>
-                    <td>{$row['user_name']}</td>
-                    <td>{$row['email']}</td>
-                    <td><a href='upgrade_user.php?user_id={$row['id']}'>Admin</a>  <a href='delete_user.php?user_id={$row['id']}'>Delete</a></td>
+                    <td>{$user_id}</td>
+                    <td>{$user_name}</td>
+                    <td>{$email}</td>
+                    <td><a href='upgrade_user.php?user_id={$user_id}'>Admin</a>  <a href='delete_user.php?user_id={$user_id}'>Delete</a></td>
                 </tr>";
         }
 
         echo "</table>";
 
-        // Free the result set
-        mysqli_free_result($result);
+        // Close the prepared statement
+        mysqli_stmt_close($stmt);
     } else {
         echo "Error: " . mysqli_error($conn);
     }

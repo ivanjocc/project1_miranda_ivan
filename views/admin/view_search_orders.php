@@ -105,12 +105,12 @@
 
 <body>
     <h1>Search Orders</h1>
-    <span style="color: red; font-weight: bold;">Note: Write 'ord' and click in 'Search' to see all the orders</span>
+    <span style="color: red; font-weight: bold;">Note: Click in 'Search' to see all the orders</span>
 
     <!-- Search Form -->
     <form action="view_search_orders.php" method="post">
         <label for="search_ref">Search by Reference:</label>
-        <input type="text" name="search_ref" required>
+        <input type="text" name="search_ref">
         <button type="submit">Search</button>
     </form>
 
@@ -144,31 +144,50 @@ if ($user_role != 1) {
 // Require the database configuration file
 require_once('../../config/database.php');
 
+// Initialize the output variable
+$output = '';
+
 // Handle order search
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Get and sanitize the search reference
     $search_ref = mysqli_real_escape_string($conn, $_POST['search_ref']);
 
-    // Query to search for orders containing the provided reference
-    $search_query = "SELECT * FROM `user_order` WHERE `ref` LIKE '%$search_ref%'";
-    $search_result = mysqli_query($conn, $search_query);
+    // Query to search for orders containing the provided reference using prepared statement
+    $search_query = "SELECT * FROM `user_order` WHERE `ref` LIKE ?";
+    $stmt = mysqli_prepare($conn, $search_query);
+
+    // Bind the parameters
+    $search_ref_param = "%" . $search_ref . "%";
+    mysqli_stmt_bind_param($stmt, "s", $search_ref_param);
+
+    // Execute the prepared statement
+    $search_result = mysqli_stmt_execute($stmt);
 
     if ($search_result) {
-        // Display search results
-        echo "<h2>Search Results</h2>";
-        while ($order = mysqli_fetch_assoc($search_result)) {
-            echo "Order ID: " . $order['id'] . "<br>";
-            echo "Reference: " . $order['ref'] . "<br>";
-            echo "Date: " . $order['date'] . "<br>";
-            echo "Total: $" . $order['total'] . "<br>";
-            echo "User ID: " . $order['user_id'] . "<br>";
-            echo "<hr>";
+        // Get the result set
+        $result_set = mysqli_stmt_get_result($stmt);
+
+        // Build the output
+        $output .= "<h2>Search Results</h2>";
+        while ($order = mysqli_fetch_assoc($result_set)) {
+            $output .= "Order ID: {$order['id']}<br>";
+            $output .= "Reference: {$order['ref']}<br>";
+            $output .= "Date: {$order['date']}<br>";
+            $output .= "Total: $ {$order['total']}<br>";
+            $output .= "User ID: {$order['user_id']}<br>";
+            $output .= "<hr>";
         }
     } else {
-        echo "Error in search: " . mysqli_error($conn);
+        $output .= "Error in search: " . mysqli_error($conn);
     }
+
+    // Close the prepared statement
+    mysqli_stmt_close($stmt);
 }
 
 // Close the database connection
 mysqli_close($conn);
+
+// Output the result
+echo $output;
 ?>

@@ -27,9 +27,15 @@ if (isset($_GET['user_id'])) {
     // Connect to the database (adjust the path based on your file structure)
     require_once('../../config/database.php');
 
-    // Query to update the user's role to 'admin'
-    $update_query = "UPDATE `user` SET `role_id` = 1 WHERE `id` = $user_id";
-    $result = mysqli_query($conn, $update_query);
+    // Query to update the user's role to 'admin' using prepared statement
+    $update_query = "UPDATE `user` SET `role_id` = 1 WHERE `id` = ?";
+    $stmt = mysqli_prepare($conn, $update_query);
+
+    // Bind the parameters
+    mysqli_stmt_bind_param($stmt, "i", $user_id);
+
+    // Execute the prepared statement
+    $result = mysqli_stmt_execute($stmt);
 
     // Check if the update was successful
     if ($result) {
@@ -39,6 +45,9 @@ if (isset($_GET['user_id'])) {
         // Display an error message if there's an issue with the database update
         echo "Error updating user role: " . mysqli_error($conn);
     }
+
+    // Close the prepared statement
+    mysqli_stmt_close($stmt);
 
     // Close the database connection
     mysqli_close($conn);
