@@ -7,37 +7,35 @@ if (!isset($_SESSION['cart'])) {
 }
 
 // Handling addition to the cart
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['add_to_cart'])) {
-        // Get product details and add to the cart
-        $productId = $_POST['product_id'];
-        $productName = $_POST['product_name'];
-        $productPrice = $_POST['product_price'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_cart'])) {
+    // Get product details and add to the cart
+    $productId = $_POST['product_id'];
+    $productName = $_POST['product_name'];
+    $productPrice = $_POST['product_price'];
 
-        // Check if the product is already in the cart
-        $productInCart = false;
-        foreach ($_SESSION['cart'] as &$cartItem) {
-            if ($cartItem['id'] === $productId) {
-                $cartItem['quantity'] += 1; // Increment the quantity
-                $productInCart = true;
-                break;
-            }
+    // Check if the product is already in the cart
+    $productInCart = false;
+    foreach ($_SESSION['cart'] as &$cartItem) {
+        if ($cartItem['id'] === $productId) {
+            $cartItem['quantity'] += 1; // Increment the quantity
+            $productInCart = true;
+            break;
         }
-        unset($cartItem); // Release the explicit reference
-
-        // If the product is not in the cart, add it
-        if (!$productInCart) {
-            $_SESSION['cart'][] = [
-                'id' => $productId,
-                'name' => $productName,
-                'price' => $productPrice,
-                'quantity' => 1,
-            ];
-        }
-
-        // Display an alert that the item has been added
-        echo '<script>alert("Item has been added to the cart!");</script>';
     }
+    unset($cartItem); // Release the explicit reference
+
+    // If the product is not in the cart, add it
+    if (!$productInCart) {
+        $_SESSION['cart'][] = [
+            'id' => $productId,
+            'name' => $productName,
+            'price' => $productPrice,
+            'quantity' => 1,
+        ];
+    }
+
+    // Display an alert that the item has been added
+    echo '<script>alert("Item has been added to the cart!");</script>';
 }
 ?>
 
@@ -147,27 +145,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php
         // Get the list of cat images from the images directory
         $catImages = glob('public/img/*.jpg');
-        
+
         foreach ($catImages as $catImage) {
             // Get the filename (without the path)
             $catName = pathinfo($catImage, PATHINFO_FILENAME);
+            ?>
 
-            // Display each cat with a form to add it to the cart
-            echo '<div class="cat-item">';
-            echo '<img src="' . $catImage . '" alt="' . $catName . '">';
-            echo '<p>' . $catName . '</p>';
-            
-            // Add a form with hidden fields to send product details
-            echo '<form method="post">';
-            echo '<input type="hidden" name="product_id" value="' . $catName . '">';
-            echo '<input type="hidden" name="product_name" value="' . $catName . '">';
-            echo '<input type="hidden" name="product_price" value="19.99">';
-            echo '<button type="submit" name="add_to_cart">Add to Cart</button>';
-            echo '</form>';
-            
-            echo '</div>';
-        }
-        ?>
+            <div class="cat-item">
+                <img src="<?= $catImage ?>" alt="<?= $catName ?>">
+                <p><?= $catName ?></p>
+
+                <!-- Add a form with hidden fields to send product details -->
+                <form method="post">
+                    <input type="hidden" name="product_id" value="<?= $catName ?>">
+                    <input type="hidden" name="product_name" value="<?= $catName ?>">
+                    <input type="hidden" name="product_price" value="19.99">
+                    <button type="submit" name="add_to_cart">Add to Cart</button>
+                </form>
+            </div>
+        <?php } ?>
     </div>
 </main>
 
